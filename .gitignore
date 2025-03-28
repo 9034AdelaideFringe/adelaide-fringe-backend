@@ -1,0 +1,5 @@
+*.deb
+config.json
+build
+.vscode
+server
