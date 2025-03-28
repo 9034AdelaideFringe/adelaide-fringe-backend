@@ -15,6 +15,7 @@ int main()
     LoginController loginController;
     SignupController signupController;
     
+    getApp().server_name("adelaide fringe server");
 
     getApp().port(18080).run();
 
