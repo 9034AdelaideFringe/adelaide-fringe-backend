@@ -41,6 +41,7 @@ private:
     static void printResults(const std::vector<std::vector<std::string>> &results);
 
     bool executeImpl(const std::string& query) const;
+    bool executeImpl(const std::string& query, std::vector<std::vector<std::string>>& results) const;
     std::vector<std::vector<std::string>> queryImpl(const std::string& query) const;
 
 };

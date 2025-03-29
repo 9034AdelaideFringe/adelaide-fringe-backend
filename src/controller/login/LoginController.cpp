@@ -22,17 +22,9 @@ response LoginController::login(const request &req)
 
     PostgresConnection conn(Config::get("database"));
 
-    // std::string query = R"(
-    //     select * from "Users" where 
-    // )";
-
-    // std::stringstream ss;
-    // ss << query << "email = " << "'" << email << "'" << " and " << "password = " << "'" << hashedPassword << "';";
-
-    // auto results = conn.query(ss.str());
 
     auto results = LoginService::findUser(conn, email, hashedPassword);
-    if(results.empty())
+    if(results.size() == 1)
     {
         json["error"] = "not found";
         return response(json);
