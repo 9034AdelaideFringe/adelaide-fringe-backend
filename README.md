@@ -12,6 +12,15 @@ Adelaide Fringe
 
 * cmake
 
+* libpqxx-dev
+
+* libasio-dev
+
+```shell
+sudo apt upgrade
+sudo apt install libpqxx-dev libasio-dev gcc make cmake -y
+```
+
 ### tested on Ubuntu22.04LTS
 
 ## Config
