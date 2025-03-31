@@ -14,7 +14,7 @@ target_sources(server PRIVATE ${SRC} main.cpp)
 find_package(OpenSSL REQUIRED)
 # find_package(UUID REQUIRED)
 
-target_link_libraries(server PRIVATE pq OpenSSL::Crypto uuid)
+target_link_libraries(server PRIVATE pq OpenSSL::Crypto uuid pqxx)
 
 # target_compile_definitions(server PRIVATE JWT_DISABLE_PICOJSON)
 

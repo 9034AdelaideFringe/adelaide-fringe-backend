@@ -1,4 +1,6 @@
 #include "controller/signup/SignupController.h"
+#include "service/UserService.h"
+#include "utils/uuid.h"
 
 SignupController::SignupController()
 {
@@ -10,7 +12,7 @@ response SignupController::signup(const request &req)
     auto x = json::load(req.body);
     if(!x || !x.has("email") || !x.has("password"))
     {
-        CROW_LOG_INFO << x.s() << "\n";
+        CROW_LOG_INFO << x.s();
         return response(status::BAD_REQUEST);
     }
 
@@ -23,11 +25,18 @@ response SignupController::signup(const request &req)
     const std::string s = Config::get("database");
     PostgresConnection conn(s);
 
-    uuid_t uuid;
-    uuid_generate_random(uuid);
+    auto user = UserService::findUser(conn, email);
+    if(user.size() >= 2)
+    {
+        return json::wvalue({{"error", "email already existed"}});
+    }
 
-    char uuidStr[37] = {0};
-    uuid_unparse(uuid, uuidStr);
+    // uuid_t uuid;
+    // uuid_generate_random(uuid);
+
+    // char uuidStr[37] = {0};
+    // uuid_unparse(uuid, uuidStr);
+    std::string uuidStr = generateUUID();
 
     std::stringstream ss; 
     ss << R"(
@@ -41,7 +50,6 @@ response SignupController::signup(const request &req)
     << "NOW()" << " " 
     << ") returning id;";
     
-    // CROW_LOG_INFO << "Statement is: " << ss.str();
 
     std::vector<std::vector<std::string>> results; 
 
