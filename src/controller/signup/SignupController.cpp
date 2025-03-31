@@ -1,5 +1,6 @@
 #include "controller/signup/SignupController.h"
 #include "service/UserService.h"
+#include "utils/uuid.h"
 
 SignupController::SignupController()
 {
@@ -30,11 +31,12 @@ response SignupController::signup(const request &req)
         return json::wvalue({{"error", "email already existed"}});
     }
 
-    uuid_t uuid;
-    uuid_generate_random(uuid);
+    // uuid_t uuid;
+    // uuid_generate_random(uuid);
 
-    char uuidStr[37] = {0};
-    uuid_unparse(uuid, uuidStr);
+    // char uuidStr[37] = {0};
+    // uuid_unparse(uuid, uuidStr);
+    std::string uuidStr = generateUUID();
 
     std::stringstream ss; 
     ss << R"(

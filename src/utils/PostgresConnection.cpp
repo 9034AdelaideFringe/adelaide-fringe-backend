@@ -1,10 +1,18 @@
 #include "utils/PostgresConnection.h"
+#include "utils/Config.h"
 #include <iostream>
 
 PostgresConnection::PostgresConnection(const std::string &connectionString)
     : conn(nullptr, PGConnDeleter{})
 {
     conn.reset(PQconnectdb(connectionString.c_str()));
+    checkConnection();
+}
+
+PostgresConnection::PostgresConnection()
+    : conn(nullptr, PGConnDeleter{})
+{
+    conn.reset(PQconnectdb(Config::get("database").c_str()));
     checkConnection();
 }
 
@@ -28,6 +36,11 @@ bool PostgresConnection::execute(const std::string &query)
 }
 
 bool PostgresConnection::execute(const std::string &query, std::vector<std::vector<std::string>> &results)
+{
+    return executeImpl(query, results);
+}
+
+bool PostgresConnection::execute(const std::string &query, std::vector<std::vector<std::string>> &results) const
 {
     return executeImpl(query, results);
 }

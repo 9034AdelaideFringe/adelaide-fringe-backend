@@ -7,16 +7,21 @@
 #include <memory>
 #include "crow.h"
 
+using QueryResult = std::vector<std::vector<std::string>>;
+
 class PostgresConnection
 {
 public:
+
     PostgresConnection(const std::string &connectionString);
+    PostgresConnection();
     ~PostgresConnection();
 
     bool execute(const std::string& query);
     bool execute(const std::string& query) const;
 
     bool execute(const std::string& query, std::vector<std::vector<std::string>>& results);
+    bool execute(const std::string& query, std::vector<std::vector<std::string>>& results) const;
 
 
     std::vector<std::vector<std::string>> query(const std::string &query);

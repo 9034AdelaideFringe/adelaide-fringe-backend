@@ -9,11 +9,12 @@ LoginController::LoginController()
 
 response LoginController::login(const request &req)
 {
+    CROW_LOG_INFO << req.body;
     json::wvalue json;
     auto user = json::load(req.body);
     if(!user || !user.has("email") || !user.has("password"))
     {
-        return response(crow::BAD_REQUEST);
+        return json::wvalue{{"error", "missing email or password"}};
     }
 
     const std::string hashedPassword = sha256(user["password"].s());

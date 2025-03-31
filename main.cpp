@@ -2,6 +2,9 @@
 #include "utils/Singleton.h"
 #include "controller/login/LoginController.h"
 #include "controller/signup/SignupController.h"
+#include "controller/signout/SignoutController.h"
+#include "controller/event/EventController.h"
+#include "controller/ticket/TicketController.h"
 #include "utils/Config.h"
 
 using namespace std;
@@ -14,6 +17,9 @@ int main()
 
     LoginController loginController;
     SignupController signupController;
+    SignoutController signoutController;
+    EventController eventController;
+    TicketController ticketController;
     
     getApp().server_name("adelaide fringe server");
 
