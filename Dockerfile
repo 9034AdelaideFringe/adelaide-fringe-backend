@@ -15,6 +15,8 @@ RUN apt-get update && \
     apt install "./Crow-1.2.1-Linux.deb" -y && \
     rm ./Crow-1.2.1-Linux.deb
 
+ENV DATABASE_URL=""
+ENV JWT_SECRET=""
 # 生成 config.json 文件
 RUN echo '{ "database": "'$DATABASE_URL'", "JWTSecret": "'$JWT_SECRET'" }' > config.json
 
