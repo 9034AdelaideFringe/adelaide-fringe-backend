@@ -25,17 +25,17 @@ jobs:
       - name: Create app directories on EC2
         run: |
           ssh ec2-user@23.22.158.203 "mkdir -p /home/ec2-user/app/dev /home/ec2-user/app/prod"
-      - name: Create app directories on EC2
-        run: |
-          ssh ec2-user@23.22.158.203 "sudo chown -R ec2-user:ec2-user /home/ec2-user/app/dev"
-          ssh ec2-user@23.22.158.203 "sudo chown -R ec2-user:ec2-user /home/ec2-user/app/prod"
+      # - name: Create app directories on EC2
+      #   run: |
+      #     ssh ec2-user@23.22.158.203 "sudo chown -R ec2-user:ec2-user /home/ec2-user/app/dev"
+      #     ssh ec2-user@23.22.158.203 "sudo chown -R ec2-user:ec2-user /home/ec2-user/app/prod"
 
       - name: Copy files to EC2
         run: |
           if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
-            scp -r ./ ec2-user@23.22.158.203:/home/ec2-user/app/dev/
+            rsync -avz --exclude='.git' ./ ec2-user@23.22.158.203:/home/ec2-user/app/dev/
           elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            scp -r ./ ec2-user@23.22.158.203:/home/ec2-user/app/prod/
+            rsync -avz --exclude='.git' ./ ec2-user@23.22.158.203:/home/ec2-user/app/prod/
           fi
 
       - name: Start Docker services on EC2
