@@ -25,6 +25,10 @@ jobs:
       - name: Create app directories on EC2
         run: |
           ssh ec2-user@23.22.158.203 "mkdir -p /home/ec2-user/app/dev /home/ec2-user/app/prod"
+      - name: Create app directories on EC2
+        run: |
+          ssh ec2-user@23.22.158.203 "sudo chown -R ec2-user:ec2-user /home/ec2-user/app/dev"
+          ssh ec2-user@23.22.158.203 "sudo chown -R ec2-user:ec2-user /home/ec2-user/app/prod"
 
       - name: Copy files to EC2
         run: |
