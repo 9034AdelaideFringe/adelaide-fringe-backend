@@ -7,6 +7,26 @@ on:
       - main # 监听 main 分支的推送事件
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Unit Tests
+        run: |
+          # 在这里运行您的单元测试命令
+          # 例如，如果您使用的是 npm，可以使用以下命令：
+          # npm install
+          # npm test
+          # 如果您使用的是 Python，可以使用：
+          # python -m unittest discover
+          echo "Running unit tests..."
+          # 这里可以添加实际的测试命令
+          # 例如，假设您有一个测试脚本
+          #./run_tests.sh  # 替换为您的测试命令
+
   deploy:
     runs-on: ubuntu-latest
 
