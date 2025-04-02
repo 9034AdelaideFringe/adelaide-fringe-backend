@@ -1,0 +1,40 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - dev # 监听 dev 分支的推送事件
+      - main # 监听 main 分支的推送事件
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+
+      - name: Create app directories on EC2
+        run: |
+          ssh ec2-user@23.22.158.203 "mkdir -p /home/ec2-user/app/dev /home/ec2-user/app/prod"
+
+      - name: Copy files to EC2
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            scp -r ./ ec2-user@23.22.158.203:/home/ec2-user/app/dev/
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            scp -r ./ ec2-user@23.22.158.203:/home/ec2-user/app/prod/
+          fi
+
+      - name: Start Docker services on EC2
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            ssh ec2-user@23.22.158.203 "cd /home/ec2-user/app/dev && docker-compose up -d --build app_dev"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ssh ec2-user@23.22.158.203 "cd /home/ec2-user/app/prod && docker-compose up -d --build app_prod"
+          fi

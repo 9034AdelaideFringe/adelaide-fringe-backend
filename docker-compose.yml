@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  app_dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://neondb_owner:npg_2lhIZ5OFskVn@ep-billowing-mode-a7kruz0s-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require
+      - JWT_SECRET=111
+    ports:
+      - '8080:18080' # 映射端口
+
+  app_prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://neondb_owner:npg_djfarBq30CIe@ep-silent-scene-a7nbgmj1-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require
+      - JWT_SECRET=222
+    ports:
+      - '80:18080' # 映射端口
