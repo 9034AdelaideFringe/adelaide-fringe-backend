@@ -41,7 +41,7 @@ jobs:
           ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
 
       - name: Add EC2 to known_hosts
-        run: ssh-keyscan 23.22.158.203 >> ~/.ssh/known_hosts
+        run: ssh-keyscan 23.22.158.203 >> /home/runner/.ssh/known_hosts
 
       - name: Create app directories on EC2
         run: |
