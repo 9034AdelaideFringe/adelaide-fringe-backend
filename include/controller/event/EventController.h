@@ -15,4 +15,6 @@ public:
     response updateEvent(const request& req);
     response searchEvent(const request& req);
     response deleteEvent(const request& req);
+
+    response getEvent(const request& req);
 };

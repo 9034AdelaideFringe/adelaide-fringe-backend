@@ -1,5 +1,6 @@
 #pragma once
 
 #include "crow.h"
+#include "crow/middlewares/cors.h"
 
-crow::SimpleApp& getApp();
+crow::App<crow::CORSHandler>& getApp();

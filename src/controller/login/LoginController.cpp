@@ -44,11 +44,11 @@ response LoginController::login(const request &req)
     }
     
 
-    LoginService::updateLastLogin(conn, json["id"].dump());
+    LoginService::updateLastLogin(conn, json::load(json["id"].dump()).s());
 
     std::string jwt = LoginService::generateJWTForUser(json);
     auto res = response(json);
-    res.set_header("Set-Cookie", "jwt=" + jwt + "; HttpOnly; Secure; Path=/; SameSite=Strict");
+    res.set_header("Set-Cookie", "jwt=" + jwt + "; HttpOnly; Secure=false; Path=/; SameSite=Strict");
     return res;
 
 
