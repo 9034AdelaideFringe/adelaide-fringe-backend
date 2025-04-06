@@ -1,0 +1,68 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - dev # 监听 dev 分支的推送事件
+      - main # 监听 main 分支的推送事件
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Unit Tests
+        run: |
+          # 在这里运行您的单元测试命令
+          # 例如，如果您使用的是 npm，可以使用以下命令：
+          # npm install
+          # npm test
+          # 如果您使用的是 Python，可以使用：
+          # python -m unittest discover
+          echo "Running unit tests..."
+          # 这里可以添加实际的测试命令
+          # 例如，假设您有一个测试脚本
+          #./run_tests.sh  # 替换为您的测试命令
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test # 确保在测试成功后再执行部署
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+
+      - name: Add EC2 to known_hosts
+        run: ssh-keyscan 23.22.158.203 >> /home/runner/.ssh/known_hosts
+
+      - name: Create app directories on EC2
+        run: |
+          ssh ec2-user@23.22.158.203 "mkdir -p /home/ec2-user/app/dev /home/ec2-user/app/prod"
+      # - name: Create app directories on EC2
+      #   run: |
+      #     ssh ec2-user@23.22.158.203 "sudo chown -R ec2-user:ec2-user /home/ec2-user/app/dev"
+      #     ssh ec2-user@23.22.158.203 "sudo chown -R ec2-user:ec2-user /home/ec2-user/app/prod"
+
+      - name: Copy files to EC2
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            rsync -avz --exclude='.git' ./ ec2-user@23.22.158.203:/home/ec2-user/app/dev/
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            rsync -avz --exclude='.git' ./ ec2-user@23.22.158.203:/home/ec2-user/app/prod/
+          fi
+
+      - name: Start Docker services on EC2
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            ssh ec2-user@23.22.158.203 "cd /home/ec2-user/app/dev && docker-compose up -d --build app_dev"
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            ssh ec2-user@23.22.158.203 "cd /home/ec2-user/app/prod && docker-compose up -d --build app_prod"
+          fi
