@@ -11,6 +11,7 @@ EventController::EventController()
     REST_HANDLER(EventController, "/update", "POST", updateEvent);
     REST_HANDLER(EventController, "/search", "POST", searchEvent);
     REST_HANDLER(EventController, "", "DELETE", searchEvent);
+    REST_HANDLER(EventController, "", "GET", getEvent);
 }
 
 response EventController::createEvent(const request &req)
@@ -263,5 +264,23 @@ response EventController::deleteEvent(const request &req)
     auto data = resultsToJSON(r);
     
     return json::wvalue{{"message", "ok"}, {"data", data}};
+}
 
+
+response EventController::getEvent(const request &req)
+{
+    pqxx::connection conn{Config::get("database")};
+    pqxx::work w{conn};
+
+    std::string query = R"(
+        select * from "Events";
+    )";
+
+    auto r = w.exec(query);
+
+    w.commit();
+
+    auto data = resultsToJSON(r);
+
+    return json::wvalue{{"message", "ok"}, {"data", data}};
 }
