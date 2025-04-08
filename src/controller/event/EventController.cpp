@@ -10,7 +10,7 @@ EventController::EventController()
     REST_HANDLER(EventController, "", "POST", createEvent);
     REST_HANDLER(EventController, "/update", "POST", updateEvent);
     REST_HANDLER(EventController, "/search", "POST", searchEvent);
-    REST_HANDLER(EventController, "", "DELETE", searchEvent);
+    REST_HANDLER(EventController, "", "DELETE", deleteEvent);
     REST_HANDLER(EventController, "", "GET", getEvent);
 }
 
