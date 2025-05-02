@@ -1,10 +1,11 @@
 #include "controller/login/LoginController.h"
 #include "service/LoginService.h"
+#include "pqxx/pqxx"
+#include "utils/JWT.h"
 
 LoginController::LoginController()
 {
     REST_HANDLER(LoginController, "", "POST", login);
-    // REST_HANDLER(LoginController, "/jwt", "GET", jwt);
 }
 
 response LoginController::login(const request &req)
@@ -21,37 +22,43 @@ response LoginController::login(const request &req)
 
     const std::string email = user["email"].s();
 
-    PostgresConnection conn(Config::get("database"));
+
+    pqxx::connection conn(Config::get("database"));
 
 
-    auto results = LoginService::findUser(conn, email, hashedPassword);
-    if(results.size() == 1)
+    pqxx::work w{conn};
+
+    std::string query = R"(select * from "users" 
+        where "email" = $1 AND "password" = $2
+    )";
+
+    pqxx::result r = w.exec_params(query,
+                                   email, hashedPassword);
+
+
+    w.commit();
+
+    json::wvalue data;
+
+    for (int i = 0; i < r.size(); i++)
     {
-        json["error"] = "not found";
-        return response(json);
+        for (int j = 0; j < r.columns(); j++)
+        {
+            auto item = r.at(i).at(j);
+            data[item.name()] = item.as<std::string>();
+        }
     }
 
+    CROW_LOG_INFO << data.dump();
 
-    CROW_LOG_INFO << "results not empty";
 
-    int rows = results.size();
-    int cols = results.front().size();
-    
-    for(int i = 0; i < cols; i++)
-    {
-        const std::string& name = results.front().at(i);
-        json[name] = results.at(1).at(i);
-    }
-    
+    std::string jwt = LoginService::generateJWTForUser(data);
+    auto res = response(data);
 
-    LoginService::updateLastLogin(conn, json::load(json["id"].dump()).s());
 
-    std::string jwt = LoginService::generateJWTForUser(json);
-    auto res = response(json);
-    res.set_header("Set-Cookie", "jwt=" + jwt + "; HttpOnly; Secure=false; Path=/; SameSite=Strict");
+    setCookie(res, jwt);
+
     return res;
-
-
 
 }
 

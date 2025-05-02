@@ -18,4 +18,5 @@ public:
     static bool updateLastLogin(const PostgresConnection& conn, const std::string& id);
 
     static std::vector<std::vector<std::string>> findUser(const PostgresConnection& conn, const std::string& email, const std::string& password);
+
 };
