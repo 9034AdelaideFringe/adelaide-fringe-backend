@@ -13,7 +13,7 @@ using namespace crow;
 class SignupController
 {
 public:
-    REST_CONTROLLER("/signup")
+    REST_CONTROLLER("/api/signup")
 
     SignupController();
     

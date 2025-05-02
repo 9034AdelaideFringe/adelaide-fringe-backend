@@ -7,12 +7,13 @@ std::string generateJWT()
 
     auto token = jwt::create()
                      .set_type("JWS")
-                     .set_issuer("auth0")
-                     .set_payload_claim("sample", jwt::claim(std::string("test")))
+                     .set_issuer("clx")
+                     .set_payload_claim("role", jwt::claim(std::string("test")))
                      .sign(jwt::algorithm::hs256{"secret"});
     return token;
 }
-auto decodeJWT(const std::string &token)
+
+jwt::decoded_jwt<jwt::traits::kazuho_picojson> decodeJWT(const std::string &token)
 {
     auto decoded = jwt::decode(token);
 
@@ -34,4 +35,9 @@ auto verifyJWT(const auto &decoded, const std::string& role)
         return false;
     }
     return true;
+}
+
+void setCookie(crow::response &res, const string& jwt)
+{
+    res.set_header("Set-Cookie", "jwt=" + jwt + "; HttpOnly; Secure=false; Path=/; SameSite=Strict");
 }

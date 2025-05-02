@@ -15,7 +15,7 @@ using namespace crow;
 class LoginController
 {
 public:
-    REST_CONTROLLER("/login")
+    REST_CONTROLLER("/api/login")
 
     LoginController();
 

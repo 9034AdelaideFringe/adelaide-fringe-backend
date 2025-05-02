@@ -15,7 +15,6 @@ std::string UserService::generateJWTForUser(const crow::json::wvalue& user)
     auto now = std::chrono::system_clock::now();
     auto expiry = now + std::chrono::hours(24 * 30);
     auto expiryTimestamp = std::chrono::duration_cast<std::chrono::seconds>(expiry.time_since_epoch()).count();
-    // user["id"].
     
     const std::string& secret = Config::get("JWTSecret");
     auto token = jwt::create()
@@ -42,6 +41,7 @@ bool UserService::updateLastLogin(const PostgresConnection &conn, const std::str
 
     return conn.execute(query);
 }
+
 std::vector<std::vector<std::string>> UserService::findUser(const PostgresConnection& conn, const std::string& email, const std::string& password)
 {
     std::string query = R"(
