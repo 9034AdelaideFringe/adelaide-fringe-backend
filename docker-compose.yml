@@ -9,6 +9,8 @@ services:
       # - DATABASE_URL=postgresql://neondb_owner:npg_2lhIZ5OFskVn@ep-billowing-mode-a7kruz0s-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require
       - DATABASE_URL=postgresql://neondb_owner:npg_9nH8RLBWUdro@ep-silent-leaf-a77kylcx-pooler.ap-southeast-2.aws.neon.tech/dev?sslmode=require
       - JWT_SECRET=111
+    volumes:
+      - uploads_dev:/app/uploads
     ports:
       - '8080:18080' # 映射端口
 
@@ -19,5 +21,11 @@ services:
     environment:
       - DATABASE_URL=postgresql://neondb_owner:npg_9nH8RLBWUdro@ep-silent-leaf-a77kylcx-pooler.ap-southeast-2.aws.neon.tech/dev?sslmode=require
       - JWT_SECRET=222
+    volumes:
+      - uploads_prod:/app/uploads
     ports:
       - '80:18080' # 映射端口
+
+volumes:
+  uploads_dev:
+  uploads_prod:
