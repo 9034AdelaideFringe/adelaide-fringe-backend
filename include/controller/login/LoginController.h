@@ -19,8 +19,9 @@ public:
 
     LoginController();
 
-private:
+protected:
     response login(const request &req);
 
+private:
     response jwt(const request& req);
 };

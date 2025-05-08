@@ -1,6 +1,7 @@
 *.deb
 config.json
 build
+test_build
 .vscode
 server
 test.sh
