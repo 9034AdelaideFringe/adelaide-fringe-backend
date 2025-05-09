@@ -15,7 +15,7 @@ using namespace crow;
 class LoginController
 {
 public:
-    REST_CONTROLLER("/api/login")
+    // REST_CONTROLLER("/api/login")
 
     LoginController();
 
@@ -24,4 +24,6 @@ protected:
 
 private:
     response jwt(const request& req);
+
+    Blueprint bp_;
 };

@@ -8,27 +8,40 @@
 #include "service/UploadService.h"
 #include "service/EventService.h"
 
-EventController::EventController()
+EventController::EventController() : bp_("event")
 {
-    // REST_HANDLER(EventController, "/search", "POST", searchEvent);
-    REST_HANDLER(EventController, "", "GET", getEvent);
+    getBlueprint().register_blueprint(bp_);
+    CROW_BP_ROUTE(bp_, "").methods("GET"_method)([this](const request& req){
+        return this->getEvent(req);
+    });
+    CROW_BP_ROUTE(bp_, "/<string>").methods("GET"_method)([this](const string& id){
+        return this->getEventById(id);
+    });
+    CROW_BP_ROUTE(bp_, "").methods("POST"_method)([this](const request &req){
+        return this->createEvent(req);
+    });
+    CROW_BP_ROUTE(bp_, "").methods("PUT"_method)([this](const request &req){
+        return this->updateEvent(req);
+    });
+    CROW_BP_ROUTE(bp_, "").methods("DELETE"_method)([this](const request &req){
+        return this->deleteEvent(req);
+    });
 
-    CROW_ROUTE(getApp(), "/api/events/<string>").methods("POST"_method)([this](const std::string &id)
-                                                                        { return this->getEventById(id); });
+    // REST_HANDLER(EventController, "", "GET", getEvent);
 
-    // CROW_ROUTE(getApp(), "/api/events").methods("POST"_method)([this](const request& req, string& id)
-    //                                                                     { return this->createEvent(req, id); });
+    // CROW_ROUTE(getApp(), "/api/events/<string>").methods("POST"_method)([this](const std::string &id)
+    //                                                                     { return this->getEventById(id); });
 
-    REST_HANDLER(EventController, "", "POST", createEvent);
+    // REST_HANDLER(EventController, "", "POST", createEvent);
 
-    CROW_ROUTE(getApp(), "/api/events/<string>").methods("PUT"_method)([this](const request &req, const std::string &id)
-                                                                       { return this->updateEvent(req, id); });
+    // CROW_ROUTE(getApp(), "/api/events/<string>").methods("PUT"_method)([this](const request &req, const std::string &id)
+    //                                                                    { return this->updateEvent(req, id); });
 
-    CROW_ROUTE(getApp(), "/api/events/<string>").methods("DELETE"_method)([this](const request &req, const std::string &id)
-                                                                          { return this->deleteEvent(req, id); });
+    // CROW_ROUTE(getApp(), "/api/events/<string>").methods("DELETE"_method)([this](const request &req, const std::string &id)
+    //                                                                       { return this->deleteEvent(req, id); });
 
-    CROW_ROUTE(getApp(), "/api/events/<string>/ticket-type").methods("GET"_method)([this](const request &req, const string &id)
-                                                                                   { return this->getTicketTypes(req, id); });
+    // CROW_ROUTE(getApp(), "/api/events/<string>/ticket-type").methods("GET"_method)([this](const request &req, const string &id)
+    //                                                                                { return this->getTicketTypes(req, id); });
 }
 
 response EventController::createEvent(const request &req)
@@ -36,14 +49,13 @@ response EventController::createEvent(const request &req)
     return EventService::createEvent(req);
 }
 
-response EventController::updateEvent(const request &req, const std::string &id)
+response EventController::updateEvent(const request &req)
 {
-    return EventService::updateEvent(req, id);
+    return EventService::updateEvent(req);
 }
 
 response EventController::searchEvent(const request &req)
 {
-    // CROW_LOG_INFO << req.url_params.get("title");
     CROW_LOG_INFO << req.body;
     auto body = json::load(req.body);
 
@@ -87,15 +99,9 @@ response EventController::searchEvent(const request &req)
     return json::wvalue{{"message", "ok"}, {"data", events}};
 }
 
-response EventController::deleteEvent(const request &req, const string &id)
+response EventController::deleteEvent(const request &req)
 {
-
-    if (id.empty())
-    {
-        return json::wvalue{{"error", "no id"}};
-    }
-
-    return EventService::deleteEvent(req, id);
+    return EventService::deleteEvent(req);
 }
 
 response EventController::getEvent(const request &req)
@@ -132,7 +138,7 @@ response EventController::getEventById(const std::string &id)
         where "event_id" = $1
     )";
 
-    auto r = w.exec(query, id);
+    auto r = w.exec_params(query, id);
     w.commit();
 
     auto data = resultsToJSON(r);

@@ -8,7 +8,9 @@
 #include "utils/Singleton.h"
 #include <uuid/uuid.h>
 
+
 using namespace crow;
+using namespace std;
 
 class SignupController
 {
@@ -21,5 +23,6 @@ public:
 private:
     response signup(const request& req);
 
+    Blueprint bp_;
 
 };

@@ -1,36 +1,33 @@
 #include "controller/signout/SignoutController.h"
-#include "service/UserService.h"
+#include "service/AuthService.h"
+#include "utils/response.h"
+#include "utils/Singleton.h"
 
-SignoutController::SignoutController()
+SignoutController::SignoutController() : bp_("signout")
 {
-    REST_HANDLER(SignoutController, "", "GET", signout);
+    getBlueprint().register_blueprint(bp_);
+    CROW_BP_ROUTE(bp_, "").methods("GET"_method)([this](const request& req){
+        return this->signout(req);
+    });
 }
 
 response SignoutController::signout(const request &req)
 {
     auto headers = req.headers;
-    // headers.
     auto cookie = req.get_header_value("Cookie");
+    
+    for(const auto& p : req.headers)
+    {
+        CROW_LOG_INFO << p.first << ": " << p.second;
+    }
+
     CROW_LOG_INFO << cookie;
 
-    int eqIndex = cookie.find('=');
-    auto jwtString = cookie.substr(eqIndex + 1);
-    auto decoded = UserService::decodeJWT(jwtString);
-    response res;
+    response res = json::wvalue{{"message", "ok"}};
 
-/*     const std::string& secret = Config::get("JWTSecret");
-    auto token = jwt::create()
-    .set_type("JWT")
-    .set_issuer("lxc")
-    .set_payload_claim("id", jwt::claim(crow::json::load(user["id"].dump()).s()))
-    .set_payload_claim("role", jwt::claim(crow::json::load(user["role"].dump()).s()))
-    .set_payload_claim("expire", jwt::claim(std::to_string(expiryTimestamp)))
-    .sign(jwt::algorithm::hs256{secret});
-    return token; */
-
-    // auto verifier = jwt::verify().with_issuer("clx")
     // log the user out!
-    res.set_header("Set-Cookie", "jwt=; HttpOnly; Secure; Path=/; SameSite=Strict; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
+    res.set_header("Set-Cookie", "jwt=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure=false; Path=/; SameSite=Strict");
 
-    return json::wvalue{{"message", "ok"}};
+
+    return res;
 }

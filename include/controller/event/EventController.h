@@ -15,11 +15,14 @@ public:
     EventController();
 
     response createEvent(const request& req);
-    response updateEvent(const request& req, const string& id);
+    response updateEvent(const request& req);
     response searchEvent(const request& req);
-    response deleteEvent(const request& req, const string& id);
+    response deleteEvent(const request& req);
 
     response getEvent(const request& req);
     response getEventById(const string& id);
     response getTicketTypes(const request& req, const string& id);
+
+private:
+    Blueprint bp_;
 };

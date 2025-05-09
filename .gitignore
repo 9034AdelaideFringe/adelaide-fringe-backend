@@ -7,3 +7,5 @@ server
 test.sh
 test
 images
+.vs
+.cache
