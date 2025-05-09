@@ -7,8 +7,10 @@ services:
       dockerfile: Dockerfile
     environment:
       # - DATABASE_URL=postgresql://neondb_owner:npg_2lhIZ5OFskVn@ep-billowing-mode-a7kruz0s-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require
-      - DATABASE_URL=postgres://neondb_owner:npg_9nH8RLBWUdro@ep-silent-leaf-a77kylcx-pooler.ap-southeast-2.aws.neon.tech/neondb?connect_timeout=15&sslmode=require
+      - DATABASE_URL=postgresql://neondb_owner:npg_9nH8RLBWUdro@ep-silent-leaf-a77kylcx-pooler.ap-southeast-2.aws.neon.tech/dev?sslmode=require
       - JWT_SECRET=111
+    volumes:
+      - uploads_dev:/app/uploads
     ports:
       - '8080:18080' # 映射端口
 
@@ -17,7 +19,13 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=postgresql://neondb_owner:npg_djfarBq30CIe@ep-silent-scene-a7nbgmj1-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require
+      - DATABASE_URL=postgresql://neondb_owner:npg_9nH8RLBWUdro@ep-silent-leaf-a77kylcx-pooler.ap-southeast-2.aws.neon.tech/dev?sslmode=require
       - JWT_SECRET=222
+    volumes:
+      - uploads_prod:/app/uploads
     ports:
       - '80:18080' # 映射端口
+
+volumes:
+  uploads_dev:
+  uploads_prod:
