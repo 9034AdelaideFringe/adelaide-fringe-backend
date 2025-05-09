@@ -8,7 +8,9 @@ class SignoutController
 public:
     REST_CONTROLLER("/signout")
 
-    SignoutController(/* args */);
+    SignoutController();
 
     response signout(const request& req);
+private:
+    Blueprint bp_;
 };

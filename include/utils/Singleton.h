@@ -4,3 +4,5 @@
 #include "crow/middlewares/cors.h"
 
 crow::App<crow::CORSHandler>& getApp();
+
+crow::Blueprint& getBlueprint();

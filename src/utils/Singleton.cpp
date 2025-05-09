@@ -9,3 +9,9 @@ crow::App<crow::CORSHandler>& getApp()
   static crow::App<crow::CORSHandler> app;
   return app;
 }
+
+crow::Blueprint& getBlueprint()
+{
+  static crow::Blueprint bp("api");
+  return bp;
+}

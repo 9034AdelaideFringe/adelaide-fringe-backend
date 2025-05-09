@@ -2,29 +2,34 @@
 #include "service/LoginService.h"
 #include "pqxx/pqxx"
 #include "utils/JWT.h"
+#include "utils/response.h"
+#include "utils/Singleton.h"
+#include "service/AuthService.h"
 
-LoginController::LoginController()
+LoginController::LoginController() : bp_("login")
 {
-    REST_HANDLER(LoginController, "", "POST", login);
+    getBlueprint().register_blueprint(bp_);
+
+    CROW_BP_ROUTE(bp_, "").methods("POST"_method)([this](const request &req)
+                                                  { return this->login(req); });
 }
 
 response LoginController::login(const request &req)
 {
-    CROW_LOG_INFO << req.body;
-    json::wvalue json;
-    auto user = json::load(req.body);
-    if(!user || !user.has("email") || !user.has("password"))
+    auto body = json::load(req.body);
+    CROW_LOG_INFO << body;
+    if (!body || !body.has("email") || !body.has("password"))
     {
         return json::wvalue{{"error", "missing email or password"}};
     }
 
-    const std::string hashedPassword = sha256(user["password"].s());
+    const string email = body["email"].s();
+    const string hashedPassword = sha256(body["password"].s());
 
-    const std::string email = user["email"].s();
-
+    CROW_LOG_INFO << string(body["password"].s());
+    CROW_LOG_INFO << hashedPassword;
 
     pqxx::connection conn(Config::get("database"));
-
 
     pqxx::work w{conn};
 
@@ -32,34 +37,21 @@ response LoginController::login(const request &req)
         where "email" = $1 AND "password" = $2
     )";
 
-    pqxx::result r = w.exec_params(query,
-                                   email, hashedPassword);
-
+    auto r = w.exec_params(query,
+                           email, hashedPassword);
 
     w.commit();
 
-    json::wvalue data;
-
-    for (int i = 0; i < r.size(); i++)
-    {
-        for (int j = 0; j < r.columns(); j++)
-        {
-            auto item = r.at(i).at(j);
-            data[item.name()] = item.as<std::string>();
-        }
-    }
-
+    auto data = resultsToJSON(r);
     CROW_LOG_INFO << data.dump();
 
+    response res = json::wvalue{{"message", "ok"}, {"data", data}};
 
-    std::string jwt = LoginService::generateJWTForUser(data);
-    auto res = response(data);
-
-
-    setCookie(res, jwt);
+    auto jwt = AuthService::generateJWTForUser(data[0]);
+    AuthService::setCookie(res, jwt);
 
     return res;
-
+    
 }
 
 response LoginController::jwt(const request &req)
