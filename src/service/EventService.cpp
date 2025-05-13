@@ -33,6 +33,10 @@ json::wvalue EventService::createEventImpl(const request &req, const string &id)
 
     auto imagePart = fileMessage.get_part_by_name("image");
     auto venueSeatingLayoutPart = fileMessage.get_part_by_name("venueSeatingLayout");
+    if(imagePart.body.empty() || venueSeatingLayoutPart.body.empty())
+    {
+        return json::wvalue{{"error", "missing image or venueSeatingLayout"}};
+    }
 
     auto datePart = fileMessage.get_part_by_name("date").body;
 
