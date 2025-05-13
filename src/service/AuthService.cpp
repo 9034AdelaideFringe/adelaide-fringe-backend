@@ -1,6 +1,7 @@
 #include "service/AuthService.h"
 #include "service/UserService.h"
 #include <utils/Config.h>
+#include <exception>
 
 using namespace std;
 
@@ -17,10 +18,18 @@ string AuthService::authJWT(const request &req)
         jwt = cookieHeader.substr(pos + tokenPrefix.size(), end - pos - tokenPrefix.size());
     }
 
-    auto decoded = UserService::decodeJWT(jwt);
+    string id;
 
-    auto idClaim = decoded.get_payload_claim("id");
-    string id = idClaim.as_string();
+    try
+    {
+        auto decoded = UserService::decodeJWT(jwt);
+        auto idClaim = decoded.get_payload_claim("id");
+        id = idClaim.as_string();
+    }
+    catch(const invalid_argument& e)
+    {
+        throw invalid_argument("user not login");
+    }
     
     return id;
 }

@@ -9,6 +9,7 @@
 #include "utils/Config.h"
 #include "jwt-cpp/jwt.h"
 #include "utils/JWT.h"
+#include "exception/ExceptionHandler.h"
 
 using namespace std;
 using namespace crow;
@@ -29,6 +30,7 @@ int main()
     // TicketController ticketController;
     
     getApp().server_name("adelaide fringe server");
+    getApp().exception_handler(ExceptionHandler::defaultExceptionHandler);
 
     getApp().port(18080).run();
 }

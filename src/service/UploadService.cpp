@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <fstream>
 #include "utils/uuid.h"
+#include "exception/FileUploadException.h"
 
 using namespace std;
 
@@ -47,7 +48,16 @@ std::string UploadService::uploadFile(const std::pair<const std::string_view, cr
 std::string UploadService::uploadFile(const crow::multipart::part_view& partView)
 {
     auto headersIt = partView.headers.find("Content-Disposition");
+    if(headersIt == partView.headers.end())
+    {
+        throw FileUploadException("missing Content-Disposition");
+    }
     auto paramsIt = headersIt->second.params.find("filename");
+    if(paramsIt == headersIt->second.params.end())
+    {
+        throw FileUploadException("missing filename");
+    }
+    
     std::string fileName(paramsIt->second);
     string extName;
 
