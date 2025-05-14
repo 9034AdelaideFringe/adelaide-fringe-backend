@@ -4,6 +4,10 @@ FROM gcc:latest AS base
 # 设置工作目录
 WORKDIR /app
 
+# 定义构建参数
+ARG DATABASE_URL
+ARG JWT_SECRET
+
 # 复制源代码到容器中
 COPY . .
 
@@ -15,8 +19,6 @@ RUN apt-get update && \
     apt install "./Crow-1.2.1-Linux.deb" -y && \
     rm ./Crow-1.2.1-Linux.deb
 
-ENV DATABASE_URL="postgres://neondb_owner:npg_9nH8RLBWUdro@ep-silent-leaf-a77kylcx-pooler.ap-southeast-2.aws.neon.tech/neondb?connect_timeout=15&sslmode=require"
-ENV JWT_SECRET="111"
 # 生成 config.json 文件
 RUN echo '{ "database": "'$DATABASE_URL'", "JWTSecret": "'$JWT_SECRET'" }' > config.json
 
