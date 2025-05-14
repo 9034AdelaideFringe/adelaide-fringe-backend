@@ -15,10 +15,13 @@ RUN apt-get update && \
     apt install "./Crow-1.2.1-Linux.deb" -y && \
     rm ./Crow-1.2.1-Linux.deb
 
-ENV DATABASE_URL="postgres://neondb_owner:npg_9nH8RLBWUdro@ep-silent-leaf-a77kylcx-pooler.ap-southeast-2.aws.neon.tech/neondb?connect_timeout=15&sslmode=require"
-ENV JWT_SECRET="111"
+ENV DATABASE_URL=""
+ENV JWT_SECRET=""
+
 # 生成 config.json 文件
-RUN echo '{ "database": "'$DATABASE_URL'", "JWTSecret": "'$JWT_SECRET'" }' > config.json
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 # 初始化数据库
 RUN PGPASSWORD=npg_9nH8RLBWUdro psql -h ep-silent-leaf-a77kylcx-pooler.ap-southeast-2.aws.neon.tech -U neondb_owner -d dev -f init_db.sql || echo "数据库初始化可能失败，请手动检查"
