@@ -27,6 +27,7 @@ file(GLOB_RECURSE SRC ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
 target_sources(server PRIVATE ${SRC} main.cpp)
 
+find_package(Threads REQUIRED)
 find_package(OpenSSL REQUIRED)
 # find_package(UUID REQUIRED)
 
@@ -36,7 +37,7 @@ find_package(OpenSSL REQUIRED)
 #     "/opt/homebrew/opt/libpqxx/lib"
 # )
 
-target_link_libraries(server PRIVATE pq OpenSSL::Crypto uuid pqxx)
+target_link_libraries(server PRIVATE pq OpenSSL::Crypto uuid pqxx Threads::Threads)
 
 # target_compile_definitions(server PRIVATE JWT_DISABLE_PICOJSON)
 

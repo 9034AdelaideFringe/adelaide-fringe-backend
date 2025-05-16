@@ -8,7 +8,6 @@
 #include "controller/user/UserController.h"
 #include "utils/Config.h"
 #include "jwt-cpp/jwt.h"
-#include "utils/JWT.h"
 #include "exception/ExceptionHandler.h"
 
 using namespace std;

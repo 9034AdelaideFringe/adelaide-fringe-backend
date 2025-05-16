@@ -5,7 +5,6 @@
 #include "utils/uuid.h"
 #include "utils/response.h"
 #include "utils/Singleton.h"
-#include "utils/JWT.h"
 #include "service/UserService.h"
 
 TicketController::TicketController()

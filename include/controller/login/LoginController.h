@@ -7,7 +7,6 @@
 #include "jwt-cpp/jwt.h"
 #include "utils/PostgresConnection.h"
 #include "utils/Config.h"
-#include "utils/JWT.h"
 #include <string>
 
 using namespace crow;
@@ -23,7 +22,6 @@ protected:
     response login(const request &req);
 
 private:
-    response jwt(const request& req);
 
     Blueprint bp_;
 };
