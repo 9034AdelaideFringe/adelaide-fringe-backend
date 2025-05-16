@@ -14,14 +14,14 @@ public:
 
 
 
-    static json::wvalue createEvent(const request &req, const string& id = "");
+    static json::wvalue createEvent(const request &req);
 
     static json::wvalue updateEvent(const request &req);
 
     static json::wvalue deleteEvent(const request& req);
 
 private:
-    static json::wvalue createEventImpl(const request& req, const string& id);
+    static json::wvalue createEventImpl(const request& req);
     
     static json::wvalue updateEventImpl(const request& req);
 

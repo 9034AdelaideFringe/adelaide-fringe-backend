@@ -1,7 +1,6 @@
 #include "controller/login/LoginController.h"
 #include "service/LoginService.h"
 #include "pqxx/pqxx"
-#include "utils/JWT.h"
 #include "utils/response.h"
 #include "utils/Singleton.h"
 #include "service/AuthService.h"
@@ -52,12 +51,4 @@ response LoginController::login(const request &req)
 
     return res;
     
-}
-
-response LoginController::jwt(const request &req)
-{
-    std::string jwt = generateJWT();
-    CROW_LOG_INFO << jwt;
-
-    return response("ok");
 }

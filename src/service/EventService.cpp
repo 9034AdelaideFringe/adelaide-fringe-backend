@@ -3,10 +3,11 @@
 #include "service/UploadService.h"
 #include "utils/Config.h"
 #include "utils/response.h"
+// #include "utils/DB.hpp"
 
-json::wvalue EventService::createEvent(const request &req, const string &id)
+json::wvalue EventService::createEvent(const request &req)
 {
-    return createEventImpl(req, id);
+    return createEventImpl(req);
 }
 
 json::wvalue EventService::updateEvent(const request &req)
@@ -19,7 +20,7 @@ json::wvalue EventService::deleteEvent(const request &req)
     return deleteEventImpl(req);
 }
 
-json::wvalue EventService::createEventImpl(const request &req, const string &id)
+json::wvalue EventService::createEventImpl(const request &req)
 {
     json::wvalue data;
 
@@ -54,6 +55,8 @@ json::wvalue EventService::createEventImpl(const request &req, const string &id)
 
     auto created_byPart = fileMessage.get_part_by_name("created_by").body;
 
+    auto ticket_typesPart = fileMessage.get_part_by_name("ticket_types").body;
+
     auto title = std::string(titlePart);
     auto description = std::string(descriptionPart);
     auto short_description = std::string(short_descriptionPart);
@@ -67,10 +70,11 @@ json::wvalue EventService::createEventImpl(const request &req, const string &id)
     auto category = std::string(categoryPart);
     auto status = std::string(statusPart);
     auto created_by = std::string(created_byPart);
+    auto ticket_types = string(ticket_typesPart);
 
     pqxx::connection conn(Config::get("database"));
 
-    std::string event_id = (id == "" ? generateUUID() : id);
+    std::string event_id = generateUUID();
 
     pqxx::work w{conn};
     std::string query = R"(insert into "events" 
@@ -112,6 +116,37 @@ json::wvalue EventService::createEventImpl(const request &req, const string &id)
 
     data = resultsToJSON(r);
 
+
+    query = R"(
+        insert into "tickettypes" ("ticket_type_id", "event_id", "name", "description", "price", "available_quantity") values
+    )";
+
+
+    auto ticket_typeData = json::wvalue();
+
+
+    auto ticket_typesJSONArray = json::load(ticket_types);
+    vector<string> params;
+    for(int i = 0; i < ticket_typesJSONArray.size(); i++)
+    {
+        const json::rvalue& ticket_typeJSON = ticket_typesJSONArray[i];
+        string ticket_type_id = generateUUID();
+        string name = ticket_typeJSON["name"].s();
+        string description = ticket_typeJSON["description"].s();
+        string price = ticket_typeJSON["price"].s();
+        string available_quantity = ticket_typeJSON["available_quantity"].s();
+
+        string values = "($1, $2, $3, $4, $5, $6) ";
+        string fullQuery = query + values + "returning *";
+
+        auto r = w.exec_params(fullQuery, ticket_type_id, event_id, name, description, price, available_quantity);
+        // auto ticket_typeResults = resultsToJSON(r);
+
+        ticket_typeData[i] = move(resultsToJSON(r)[0]);
+        
+    }
+
+
     CROW_LOG_INFO << data.dump();
 
     for (auto &key : data.keys())
@@ -124,7 +159,7 @@ json::wvalue EventService::createEventImpl(const request &req, const string &id)
 
     w.commit();
 
-    return json::wvalue{{"message", "ok"}, {"data", data}};
+    return json::wvalue{{"message", "ok"}, {"data", data}, {"ticket_types", ticket_typeData}};
 }
 
 json::wvalue EventService::updateEventImpl(const request &req)
