@@ -39,6 +39,11 @@ find_package(OpenSSL REQUIRED)
 
 target_link_libraries(server PRIVATE pq OpenSSL::Crypto uuid pqxx Threads::Threads)
 
+target_compile_definitions(server PRIVATE 
+    CROW_STATIC_DIRECTORY=\"images/\"
+    CROW_STATIC_ENDPOINT=\"/images/<path>\"
+)
+
 # target_compile_definitions(server PRIVATE JWT_DISABLE_PICOJSON)
 
 add_custom_command(TARGET server POST_BUILD
