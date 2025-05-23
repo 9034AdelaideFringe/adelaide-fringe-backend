@@ -1,7 +1,5 @@
 #pragma once
-// #include "controller/Controller.h"
 #include "crow.h"
-
 
 using namespace crow;
 class PasswordResetController
@@ -9,6 +7,8 @@ class PasswordResetController
 public:
 
     PasswordResetController(/* args */);
+
+    response sendEmail(const request& req);
 
     void resetPassword(const request& req);
 

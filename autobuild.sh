@@ -18,7 +18,7 @@ fi
 
 echo "Detected OS: $OS_ID"
 
-if [[ "$OS_ID" == "ubuntu" ]]; then
+if [[ "$OS_ID" == "ubuntu" || "$OS_ID" == "debian" ]]; then
     apt update -y
     apt install -y libasio-dev libpqxx-dev g++ cmake curl uuid-dev make
 
