@@ -2,11 +2,15 @@
 
 Adelaide Fringe
 
+## API Document
+[API Document](https://documenter.getpostman.com/view/43528466/2sB2iwEEYJ)
+
+
 ## Prerequisites and Evironment
 
 * crow installed [Link](https://github.com/CrowCpp/Crow/releases/download/v1.2.1.2/Crow-1.2.1-Linux.deb)
 
-* gcc
+* g++
 
 * make
 
@@ -18,7 +22,7 @@ Adelaide Fringe
 
 ```shell
 sudo apt upgrade
-sudo apt install libpqxx-dev libasio-dev gcc make cmake -y
+sudo apt install libpqxx-dev libasio-dev g++ make cmake -y
 ```
 
 ### tested on Ubuntu22.04LTS
@@ -42,3 +46,6 @@ cmake -B build && cmake --build build
 ```shell
 ./server
 ```
+
+## More Information
+[Notion](https://www.notion.so/Development-Environment-1f2671f3df2680768b2de6f44c14cf38)
