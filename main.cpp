@@ -10,6 +10,7 @@
 #include "jwt-cpp/jwt.h"
 #include "exception/ExceptionHandler.h"
 #include "controller/ticket_type/TicketTypeController.h"
+#include "controller/cart/CartController.h"
 
 using namespace std;
 using namespace crow;
@@ -27,8 +28,9 @@ int main()
     SignupController signupController;
     SignoutController signoutController;
     TicketTypeController ticketTypeController;
+    TicketController ticketController;
     
-    // TicketController ticketController;
+    // CartController cartController;
     
     getApp().server_name("adelaide fringe server");
     getApp().exception_handler(ExceptionHandler::defaultExceptionHandler);

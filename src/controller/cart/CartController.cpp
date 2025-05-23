@@ -10,23 +10,24 @@
 using namespace std;
 
 
-CartController::CartController() : bp_("api", "cart")
+CartController::CartController() : bp_("cart")
 {
-    getApp().register_blueprint(bp_);
+    // getApp().register_blueprint(bp_);
+    getBlueprint().register_blueprint(bp_);
 
-    CROW_BP_ROUTE(bp_, "/").methods("GET"_method)([this](const request& req)
+    CROW_BP_ROUTE(bp_, "").methods("GET"_method)([this](const request& req)
     {
         return this->getCart(req);
     });
-    CROW_BP_ROUTE(bp_, "/").methods("POST"_method)([this](const request& req)
+    CROW_BP_ROUTE(bp_, "").methods("POST"_method)([this](const request& req)
     {
         return this->addToCart(req);
     });
-    CROW_BP_ROUTE(bp_, "/").methods("PUT"_method)([this](const request& req)
+    CROW_BP_ROUTE(bp_, "").methods("PUT"_method)([this](const request& req)
     {
         return this->updateCart(req);
     });
-    CROW_BP_ROUTE(bp_, "/").methods("DELETE"_method)([this](const request& req)
+    CROW_BP_ROUTE(bp_, "").methods("DELETE"_method)([this](const request& req)
     {
         return this->removeFromCart(req);
     });

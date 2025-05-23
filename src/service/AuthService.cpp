@@ -56,11 +56,51 @@ std::string AuthService::generateJWTForUser(const crow::json::wvalue& user)
 
 void AuthService::setCookie(crow::response &res, const string& jwt)
 {
-    res.set_header("Set-Cookie", "jwt=" + jwt + "; HttpOnly; Secure=false; Path=/; SameSite=Strict");
+    res.set_header("Set-Cookie", "jwt=" + jwt + "; HttpOnly; Secure; Path=/; SameSite=Strict");
 }
 
 jwt::decoded_jwt<jwt::traits::kazuho_picojson> AuthService::decodeJWT(const string& jwt)
 {
     auto result = jwt::decode(jwt);
     return result;
+}
+
+string AuthService::authAdmin(const request &req)
+{
+    auto cookieHeader = req.get_header_value("Cookie");
+    std::string jwt;
+
+    std::string tokenPrefix = "jwt=";
+    auto pos = cookieHeader.find(tokenPrefix);
+    if (pos != std::string::npos)
+    {
+        auto end = cookieHeader.find(';', pos);
+        jwt = cookieHeader.substr(pos + tokenPrefix.size(), end - pos - tokenPrefix.size());
+    }
+
+    string id;
+    string role;
+
+    try
+    {
+        auto decoded = UserService::decodeJWT(jwt);
+        auto idClaim = decoded.get_payload_claim("id");
+        auto roleClaim = decoded.get_payload_claim("role");
+        id = idClaim.as_string();
+        role = roleClaim.as_string();
+        if(role != "ADMIN")
+        {
+            throw invalid_argument("user isn't admin");
+        }
+    }
+    catch(const invalid_argument& e)
+    {
+        if(e.what() != "")
+        {
+            throw e;
+        }
+        throw invalid_argument("user not login");
+    }
+    
+    return id;
 }
