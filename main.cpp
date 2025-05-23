@@ -29,8 +29,8 @@ int main()
     SignoutController signoutController;
     TicketTypeController ticketTypeController;
     TicketController ticketController;
+    CartController cartController;
     
-    // CartController cartController;
     
     getApp().server_name("adelaide fringe server");
     getApp().exception_handler(ExceptionHandler::defaultExceptionHandler);
