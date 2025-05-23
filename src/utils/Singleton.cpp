@@ -3,10 +3,9 @@
 #include <functional>
 #include "crow/middlewares/cors.h"
 
-crow::App<crow::CORSHandler>& getApp()
+crow::App<crow::CORSHandler, AuthMiddleware>& getApp()
 {
-  // static crow::SimpleApp app;
-  static crow::App<crow::CORSHandler> app;
+  static crow::App<crow::CORSHandler, AuthMiddleware> app;
   return app;
 }
 

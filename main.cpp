@@ -1,15 +1,19 @@
 #include "crow.h"
 #include "utils/Singleton.h"
+#include "utils/Config.h"
+#include "jwt-cpp/jwt.h"
+
+#include "exception/ExceptionHandler.h"
+
 #include "controller/login/LoginController.h"
 #include "controller/signup/SignupController.h"
 #include "controller/signout/SignoutController.h"
 #include "controller/event/EventController.h"
 #include "controller/ticket/TicketController.h"
 #include "controller/user/UserController.h"
-#include "utils/Config.h"
-#include "jwt-cpp/jwt.h"
-#include "exception/ExceptionHandler.h"
 #include "controller/ticket_type/TicketTypeController.h"
+#include "controller/cart/CartController.h"
+#include "controller/order/OrderController.h"
 
 using namespace std;
 using namespace crow;
@@ -27,8 +31,10 @@ int main()
     SignupController signupController;
     SignoutController signoutController;
     TicketTypeController ticketTypeController;
+    TicketController ticketController;
+    CartController cartController;
+    OrderController orderController;
     
-    // TicketController ticketController;
     
     getApp().server_name("adelaide fringe server");
     getApp().exception_handler(ExceptionHandler::defaultExceptionHandler);
