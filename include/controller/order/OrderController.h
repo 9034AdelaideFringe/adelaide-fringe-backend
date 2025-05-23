@@ -13,7 +13,10 @@ public:
     OrderController();
 
     response getAllOrders(const request& req);
-    // response getOrderById(const request& req, const string& id);
+    response getOrderById(const request& req, const string& id);
+    response updateOrder(const request& req);
+    response deleteOrder(const request& req);
+    
 
 
 private:
