@@ -2,20 +2,23 @@
 
 #include "crow.h"
 #include "service/AuthService.h"
+#include <string>
 
+using namespace std;
 using namespace crow;
 
 struct AuthMiddleware : ILocalMiddleware
 {
     struct context
     {
+        string id;
     };
 
     void before_handle(crow::request &req, crow::response &res, context &ctx)
     {
         try
         {
-            AuthService::authJWT(req);
+            ctx.id = AuthService::authJWT(req);
         }
         catch (const std::exception &e)
         {
