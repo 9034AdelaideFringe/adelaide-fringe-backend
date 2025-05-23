@@ -16,8 +16,10 @@ TicketController::TicketController() : bp_("ticket")
 
     CROW_BP_ROUTE(bp_, "").methods("GET"_method)([this](const request &req)
                                                  { return this->getAllTickets(req); });
-    CROW_BP_ROUTE(bp_, "").methods("POST"_method)([this](const request &req)
-                                                  { return this->createTicket(req); });
+    // CROW_BP_ROUTE(bp_, "").methods("POST"_method)([this](const request &req)
+    //                                               { return this->createTicket(req); });
+    CROW_BP_ROUTE(bp_, "").methods("PUT"_method)([this](const request &req)
+                                                  { return this->updateTicket(req); });
     CROW_BP_ROUTE(bp_, "/<string>").methods("GET"_method)([this](const request& req, const string& id){
         return this->getTicket(req, id);
     });
@@ -49,62 +51,61 @@ response TicketController::getAllTickets(const request &req)
     return json::wvalue{{"message", "ok"}, {"data", data}};
 }
 
-response TicketController::createTicket(const request &req)
-{
-    auto body = json::load(req.body);
-    multipart::message_view multipartMessage(req);
-    string order_id(multipartMessage.get_part_by_name("order_id").body);
-    string ticket_type_id(multipartMessage.get_part_by_name("ticket_type_id").body); 
-    string event_id(multipartMessage.get_part_by_name("event_id").body); 
+// response TicketController::createTicket(const request &req)
+// {
+//     auto body = json::load(req.body);
+//     multipart::message_view multipartMessage(req);
+//     string order_id(multipartMessage.get_part_by_name("order_id").body);
+//     string ticket_type_id(multipartMessage.get_part_by_name("ticket_type_id").body); 
+//     string event_id(multipartMessage.get_part_by_name("event_id").body); 
 
-    multipart::part_view qr_codePart = multipartMessage.get_part_by_name("qr_code");
-    string qr_code = UploadService::uploadFile(multipart::part_view(qr_codePart));
+//     multipart::part_view qr_codePart = multipartMessage.get_part_by_name("qr_code");
+//     string qr_code = UploadService::uploadFile(multipart::part_view(qr_codePart));
      
-    string status(multipartMessage.get_part_by_name("status").body);
-    string issue_date(multipartMessage.get_part_by_name("issue_date").body); 
-    string expiry_date(multipartMessage.get_part_by_name("expiry_date").body); 
-    string last_refund_date(multipartMessage.get_part_by_name("last_refund_date").body); 
-    string scan_date(multipartMessage.get_part_by_name("scan_date").body);
+//     string status(multipartMessage.get_part_by_name("status").body);
+//     string issue_date(multipartMessage.get_part_by_name("issue_date").body); 
+//     string expiry_date(multipartMessage.get_part_by_name("expiry_date").body); 
+//     string last_refund_date(multipartMessage.get_part_by_name("last_refund_date").body); 
     
-    string ticket_id = generateUUID();
+//     string ticket_id = generateUUID();
     
-    string query = R"(
-    with inserted as(
-        insert into "tickets"
-        ("ticket_id", "order_id", "ticket_type_id", "event_id", "qr_code", "status", "issue_date", "expiry_date", "last_refund_date", "scan_date")
-        values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        returning *)
-        select row_to_json(inserted) from inserted
-    )";
+//     string query = R"(
+//     with inserted as(
+//         insert into "tickets"
+//         ("ticket_id", "order_id", "ticket_type_id", "event_id", "qr_code", "status", "issue_date", "expiry_date", "last_refund_date")
+//         values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+//         returning *)
+//         select row_to_json(inserted) from inserted
+//     )";
 
-    pqxx::connection conn{Config::get("database")};
-    pqxx::work w{conn};
+//     pqxx::connection conn{Config::get("database")};
+//     pqxx::work w{conn};
 
-    auto r = w.exec_params(query,
-        ticket_id,
-        order_id,
-        ticket_type_id,
-        event_id,
-        qr_code,
-        status,
-        issue_date,
-        expiry_date,
-        last_refund_date,
-        scan_date
-    );
+//     auto r = w.exec_params(query,
+//         ticket_id,
+//         order_id,
+//         ticket_type_id,
+//         event_id,
+//         qr_code,
+//         status,
+//         issue_date,
+//         expiry_date,
+//         last_refund_date
+//     );
 
-    w.commit();
+//     w.commit();
 
-    auto data = json::load(r[0][0].c_str());
+//     auto data = json::load(r[0][0].c_str());
 
-    return json::wvalue{{"message", "ok"}, {"data", data}};
+//     return json::wvalue{{"message", "ok"}, {"data", data}};
 
 
-}
+// }
 
 response TicketController::updateTicket(const request& req)
 {
     auto body = json::load(req.body);
+    CROW_LOG_INFO << req.body;
 
     string ticket_id(body["ticket_id"].s());
     string order_id(body["order_id"].s());
@@ -117,54 +118,58 @@ response TicketController::updateTicket(const request& req)
     string scan_date(body["scan_date"].s());
 
         string query = R"(
-    with updated as(
-        update "tickets"
-        set "order_id" = $2,
-            "ticket_type_id" = $3,
-            "event_id" = $4,
-            "status" = $5,
-            "issue_date" = $6,
-            "expiry_date" = $7,
-            "last_refund_date" = $8,
-            "scan_date" = $9
-        where "ticket_id" = $1 
-        returning *)
-        select row_to_json(updated) from updated
+        WITH updated AS (
+            UPDATE "tickets"
+            SET "order_id" = $2,
+                "ticket_type_id" = $3,
+                "event_id" = $4,
+                "status" = $5,
+                "issue_date" = $6,
+                "expiry_date" = $7,
+                "last_refund_date" = $8,
+                "scan_date" = $9
+            WHERE "ticket_id" = $1 
+            RETURNING *
+        )
+        SELECT json_agg(updated) FROM updated;
     )";
 
     pqxx::connection conn{Config::get("database")};
     pqxx::work w{conn};
     auto r = w.exec_params(query, ticket_id, order_id, ticket_type_id, event_id, status, issue_date, expiry_date, last_refund_date, scan_date);
     w.commit();
+
     auto dataStr = r[0][0].c_str();
     auto data = json::load(dataStr);
-    CROW_LOG_INFO << data.s();
+    CROW_LOG_INFO << dataStr;
 
     return json::wvalue{{"message", "ok"}, {"data", data}};
 }
 
 response TicketController::getTicket(const request &req, const string& id)
 {
+    CROW_LOG_INFO << id;
     pqxx::connection conn{Config::get("database")};
     pqxx::work w{conn};
     
     string query = R"(
-        with selected as(
-            select * from "tickets"
-            where "ticket_id" = $1
-            returning *
-        )
-            select row_to_json(selected) from selected
+        SELECT json_agg(t) 
+        FROM (
+            SELECT * FROM "tickets" WHERE "ticket_id" = $1
+        ) AS t;
     )";
+
     auto r = w.exec_params(query, id);
     w.commit();
     auto dataStr = r[0][0].c_str();
     auto data = json::load(dataStr);
+    CROW_LOG_INFO << data;
     return json::wvalue{{"message", "ok"}, {"data", data}};
 }
 
 response TicketController::deleteTicket(const request &req)
 {
+    CROW_LOG_INFO << req.body;
     auto body = json::load(req.body);
 
     string id(body["ticket_id"].s());
@@ -178,12 +183,14 @@ response TicketController::deleteTicket(const request &req)
             where "ticket_id" = $1
             returning *
         )
-            select row_to_json(deleted) from deleted
+            select json_agg(deleted) from deleted
     )";
     auto r = w.exec_params(query, id);
     w.commit();
     auto dataStr = r[0][0].c_str();
     auto data = json::load(dataStr);
+
+    CROW_LOG_INFO << data;
     return json::wvalue{{"message", "ok"}, {"data", data}};
 } 
 
