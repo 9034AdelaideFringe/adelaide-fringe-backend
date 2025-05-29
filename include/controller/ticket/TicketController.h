@@ -16,6 +16,7 @@ public:
     response getTicket(const request& req, const string& id);
     response deleteTicket(const request& req);
 
+    response getTicketsByUserId(const request& req, const string& id);
 
 private:
     Blueprint bp_;

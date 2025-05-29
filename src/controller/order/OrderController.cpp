@@ -23,6 +23,10 @@ OrderController::OrderController() : bp_("order")
         return this->deleteOrder(req);
     });
 
+    CROW_BP_ROUTE(bp_, "/userid/<string>").methods("GET"_method)([this](const request& req, const string& id){
+        return this->getOrdersByUserId(req, id);
+    });
+
     
 }
 
@@ -147,6 +151,36 @@ response OrderController::deleteOrder(const request &req)
     )";
 
     auto r = w.exec_params(query, order_id);
+
+    json::wvalue res{{"message", "ok"}};
+
+    if (r.empty())
+    {
+        res["data"] = json::wvalue::list();
+    }
+    else
+    {
+        auto dataStr = r[0][0].c_str();
+        auto data = json::load(dataStr);
+        res["data"] = data;
+    }
+
+    CROW_LOG_INFO << res.dump();
+
+    return res;
+}
+
+response OrderController::getOrdersByUserId(const request &req, const string &id)
+{
+    CROW_LOG_INFO << id;
+    pqxx::connection conn(Config::get("database"));
+    pqxx::work w{conn};
+
+    string query = R"(
+        SELECT json_agg(t) FROM (SELECT * FROM orders where "user_id" = $1) AS t;
+    )";
+
+    auto r = w.exec_params(query, id);
 
     json::wvalue res{{"message", "ok"}};
 
