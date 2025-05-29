@@ -12,7 +12,10 @@ TicketTypeController::TicketTypeController() : bp_("ticket-type")
         return this->getTicketTypes(req);
     });
     CROW_BP_ROUTE(bp_, "/<string>").methods("GET"_method)([this](const request& req, const string& id){
-        return this->getTicketTypeById(req, id);
+        return this->getTicketTypeByUserId(req, id);
+    });
+    CROW_BP_ROUTE(bp_, "/ticket-type-id/<string>").methods("GET"_method)([this](const request& req, const string& id){
+        return this->getTicketTypeByTicketTypeId(req, id);
     });
 }
 
@@ -50,7 +53,7 @@ response TicketTypeController::getTicketTypes(const request &req)
     return res;
 }
 
-response TicketTypeController::getTicketTypeById(const request &req, const string& id)
+response TicketTypeController::getTicketTypeByUserId(const request &req, const string& id)
 {
     pqxx::connection conn{Config::get("database")};
 
@@ -65,6 +68,33 @@ response TicketTypeController::getTicketTypeById(const request &req, const strin
 
         )
             from "tickettypes" where "event_id" = $1
+    )";
+
+    auto r = w.exec_params(query, id);
+    w.commit();
+
+    auto data = r[0][0].c_str();
+    json::wvalue res{{"message", "ok"}, {"data", json::load(data)}};
+    CROW_LOG_INFO << res.dump();
+
+    return res;
+}
+
+response TicketTypeController::getTicketTypeByTicketTypeId(const request &req, const string &id)
+{
+    pqxx::connection conn{Config::get("database")};
+
+    pqxx::work w{conn};
+
+    string query = R"(
+        select COALESCE(
+            json_agg(
+                row_to_json(tickettypes)
+            ),
+            '[]'::json
+
+        )
+            from "tickettypes" where "ticket_type_id" = $1
     )";
 
     auto r = w.exec_params(query, id);
