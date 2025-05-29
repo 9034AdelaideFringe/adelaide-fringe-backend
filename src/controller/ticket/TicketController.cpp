@@ -12,21 +12,20 @@
 TicketController::TicketController() : bp_("ticket")
 {
     getBlueprint().register_blueprint(bp_);
-    bp_.CROW_MIDDLEWARES(getApp(), AuthMiddleware);
+    // bp_.CROW_MIDDLEWARES(getApp(), AuthMiddleware);
 
     CROW_BP_ROUTE(bp_, "").methods("GET"_method)([this](const request &req)
                                                  { return this->getAllTickets(req); });
     // CROW_BP_ROUTE(bp_, "").methods("POST"_method)([this](const request &req)
     //                                               { return this->createTicket(req); });
     CROW_BP_ROUTE(bp_, "").methods("PUT"_method)([this](const request &req)
-                                                  { return this->updateTicket(req); });
-    CROW_BP_ROUTE(bp_, "/<string>").methods("GET"_method)([this](const request& req, const string& id){
-        return this->getTicket(req, id);
-    });
-    CROW_BP_ROUTE(bp_, "").methods("DELETE"_method)([this](const request& req){
-        return this->deleteTicket(req);
-    });
-
+                                                 { return this->updateTicket(req); });
+    CROW_BP_ROUTE(bp_, "/<string>").methods("GET"_method)([this](const request &req, const string &id)
+                                                          { return this->getTicket(req, id); });
+    CROW_BP_ROUTE(bp_, "").methods("DELETE"_method)([this](const request &req)
+                                                    { return this->deleteTicket(req); });
+    CROW_BP_ROUTE(bp_, "/userid/<string>").methods("GET"_method)([this](const request &req, const string &id)
+                                                                 { return this->getTicketsByUserId(req, id); });
 }
 
 response TicketController::getAllTickets(const request &req)
@@ -56,19 +55,19 @@ response TicketController::getAllTickets(const request &req)
 //     auto body = json::load(req.body);
 //     multipart::message_view multipartMessage(req);
 //     string order_id(multipartMessage.get_part_by_name("order_id").body);
-//     string ticket_type_id(multipartMessage.get_part_by_name("ticket_type_id").body); 
-//     string event_id(multipartMessage.get_part_by_name("event_id").body); 
+//     string ticket_type_id(multipartMessage.get_part_by_name("ticket_type_id").body);
+//     string event_id(multipartMessage.get_part_by_name("event_id").body);
 
 //     multipart::part_view qr_codePart = multipartMessage.get_part_by_name("qr_code");
 //     string qr_code = UploadService::uploadFile(multipart::part_view(qr_codePart));
-     
+
 //     string status(multipartMessage.get_part_by_name("status").body);
-//     string issue_date(multipartMessage.get_part_by_name("issue_date").body); 
-//     string expiry_date(multipartMessage.get_part_by_name("expiry_date").body); 
-//     string last_refund_date(multipartMessage.get_part_by_name("last_refund_date").body); 
-    
+//     string issue_date(multipartMessage.get_part_by_name("issue_date").body);
+//     string expiry_date(multipartMessage.get_part_by_name("expiry_date").body);
+//     string last_refund_date(multipartMessage.get_part_by_name("last_refund_date").body);
+
 //     string ticket_id = generateUUID();
-    
+
 //     string query = R"(
 //     with inserted as(
 //         insert into "tickets"
@@ -99,10 +98,9 @@ response TicketController::getAllTickets(const request &req)
 
 //     return json::wvalue{{"message", "ok"}, {"data", data}};
 
-
 // }
 
-response TicketController::updateTicket(const request& req)
+response TicketController::updateTicket(const request &req)
 {
     auto body = json::load(req.body);
     CROW_LOG_INFO << req.body;
@@ -117,7 +115,7 @@ response TicketController::updateTicket(const request& req)
     string last_refund_date(body["last_refund_date"].s());
     string scan_date(body["scan_date"].s());
 
-        string query = R"(
+    string query = R"(
         WITH updated AS (
             UPDATE "tickets"
             SET "order_id" = $2,
@@ -146,12 +144,12 @@ response TicketController::updateTicket(const request& req)
     return json::wvalue{{"message", "ok"}, {"data", data}};
 }
 
-response TicketController::getTicket(const request &req, const string& id)
+response TicketController::getTicket(const request &req, const string &id)
 {
     CROW_LOG_INFO << id;
     pqxx::connection conn{Config::get("database")};
     pqxx::work w{conn};
-    
+
     string query = R"(
         SELECT json_agg(t) 
         FROM (
@@ -176,7 +174,7 @@ response TicketController::deleteTicket(const request &req)
 
     pqxx::connection conn{Config::get("database")};
     pqxx::work w{conn};
-    
+
     string query = R"(
         with deleted as(
             delete from "tickets"
@@ -192,5 +190,33 @@ response TicketController::deleteTicket(const request &req)
 
     CROW_LOG_INFO << data;
     return json::wvalue{{"message", "ok"}, {"data", data}};
-} 
+}
 
+response TicketController::getTicketsByUserId(const request &req, const string &id)
+{
+    CROW_LOG_INFO << id;
+    pqxx::connection conn{Config::get("database")};
+    pqxx::work w{conn};
+
+    string query = R"(
+    SELECT COALESCE(json_agg(t), '[]'::json) 
+    FROM (
+        SELECT t.*, o.* 
+        FROM "tickets" t 
+        JOIN "orders" o ON t."order_id" = o."order_id" 
+        WHERE o."user_id" = $1
+    ) AS t;
+)";
+
+    auto r = w.exec_params(query, id);
+    w.commit();
+
+    auto data = json::wvalue();
+
+    auto dataStr = r[0][0].c_str();
+
+    data = json::load(dataStr);
+
+    CROW_LOG_INFO << data.dump();
+    return json::wvalue{{"message", "ok"}, {"data", data}};
+}
