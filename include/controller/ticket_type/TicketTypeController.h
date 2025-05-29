@@ -13,7 +13,8 @@ public:
 
 
     response getTicketTypes(const request& req);
-    response getTicketTypeById(const request& req, const string& id);
+    response getTicketTypeByUserId(const request& req, const string& id);
+    response getTicketTypeByTicketTypeId(const request& req, const string& id);
 
 private:
     Blueprint bp_;
