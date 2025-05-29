@@ -17,6 +17,7 @@ public:
     response updateOrder(const request& req);
     response deleteOrder(const request& req);
     
+    response getOrdersByUserId(const request& req, const string& id);
 
 
 private:
