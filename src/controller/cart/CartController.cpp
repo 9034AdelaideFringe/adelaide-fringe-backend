@@ -6,6 +6,7 @@
 #include <string>
 #include "utils/Singleton.h"
 #include "utils/uuid.h"
+#include "service/TicketService.h"
 
 using namespace std;
 
@@ -191,7 +192,7 @@ response CartController::checkOut(const request &req, const string &id)
     r = w.exec_params(query, id);
 
     // 5. 插入所有票（关键点：用 generate_series）
-    w.exec_params(R"(
+    r = w.exec_params(R"(
         INSERT INTO tickets (ticket_id, order_id, ticket_type_id, event_id, issue_date, expiry_date, last_refund_date)
         SELECT
             gen_random_uuid(),
@@ -205,8 +206,26 @@ response CartController::checkOut(const request &req, const string &id)
         JOIN tickettypes tt ON c.ticket_type_id = tt.ticket_type_id,
             generate_series(1, c.quantity)
         WHERE c.user_id = $2
+        returning *
     )",
                   order_id, id);
+
+    query = R"(
+        update "tickets" set "qr_code" = './images/' || "ticket_id" || '.png'
+        where "order_id" = $1
+        returning *
+    )";
+
+    r = w.exec_params(query, order_id);
+
+    for(const pqxx::row& rowResult : r)
+    {
+        const string& path = rowResult["qr_code"].c_str();
+        const string& id = rowResult["ticket_id"].c_str();
+        const string& url = "https://x.badtom.dpdns.org/api/ticket/scan/" + string(id);
+        TicketService::generateQRCode(path, url);
+    }
+    
 
     // 6. 清空购物车
     r = w.exec_params(R"(
