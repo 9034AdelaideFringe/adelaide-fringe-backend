@@ -18,6 +18,9 @@ public:
 
     response getTicketsByUserId(const request& req, const string& id);
 
+    // scan
+    response scanTicket(const request& req, const string& id);
+
 private:
     Blueprint bp_;
 };

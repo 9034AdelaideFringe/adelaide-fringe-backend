@@ -26,6 +26,10 @@ TicketController::TicketController() : bp_("ticket")
                                                     { return this->deleteTicket(req); });
     CROW_BP_ROUTE(bp_, "/userid/<string>").methods("GET"_method)([this](const request &req, const string &id)
                                                                  { return this->getTicketsByUserId(req, id); });
+                                                                 
+    CROW_BP_ROUTE(bp_, "/scan/<string>").methods("GET"_method)([this](const request &req, const string &id)
+                                                                 { return this->scanTicket(req, id); });
+
 }
 
 response TicketController::getAllTickets(const request &req)
@@ -209,6 +213,34 @@ response TicketController::getTicketsByUserId(const request &req, const string &
 )";
 
     auto r = w.exec_params(query, id);
+    w.commit();
+
+    auto data = json::wvalue();
+
+    auto dataStr = r[0][0].c_str();
+
+    data = json::load(dataStr);
+
+    CROW_LOG_INFO << data.dump();
+    return json::wvalue{{"message", "ok"}, {"data", data}};
+}
+
+
+response TicketController::scanTicket(const request &req, const string &id)
+{
+    CROW_LOG_INFO << id;
+    pqxx::connection conn{Config::get("database")};
+    pqxx::work w{conn};
+
+    string query = R"(
+        with updated as (
+        update "tickets" set "status" = $2, "scan_date" = NOW() where "ticket_id" = $1
+        returning *
+        )
+        select json_agg(updated) from updated
+)";
+
+    auto r = w.exec_params(query, id, "USED");
     w.commit();
 
     auto data = json::wvalue();

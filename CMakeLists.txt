@@ -29,7 +29,7 @@ find_package(OpenSSL REQUIRED)
 
 
 
-target_link_libraries(server PRIVATE pq OpenSSL::Crypto uuid pqxx Threads::Threads)
+target_link_libraries(server PRIVATE pq OpenSSL::Crypto OpenSSL::SSL uuid pqxx Threads::Threads)
 
 target_compile_definitions(server PRIVATE 
     CROW_STATIC_DIRECTORY=\"images/\"
@@ -44,4 +44,4 @@ add_custom_command(TARGET server POST_BUILD
     COMMENT "Copying server executable to the top-level directory"
 )
 
-
+target_compile_definitions(server PRIVATE CPPHTTPLIB_OPENSSL_SUPPORT)
