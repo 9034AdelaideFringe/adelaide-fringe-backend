@@ -2,10 +2,11 @@
 #include <vector>
 #include <functional>
 #include "crow/middlewares/cors.h"
+#include "middlewares/AdelaideCORS.h"
 
-crow::App<crow::CORSHandler, AuthMiddleware>& getApp()
+crow::App<AdelaideCORS, AuthMiddleware>& getApp()
 {
-  static crow::App<crow::CORSHandler, AuthMiddleware> app;
+  static crow::App<AdelaideCORS, AuthMiddleware> app;
   return app;
 }
 
