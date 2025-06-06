@@ -213,6 +213,7 @@ response TicketController::getTicketsByUserId(const request &req, const string &
                 'expiry_date', t.expiry_date,
                 'last_refund_date', t.last_refund_date,
                 'scan_date', t.scan_date,
+                'seat', t.seat,
                 'order_details', json_build_object(
                     'order_id', o.order_id,
                     'user_id', o.user_id,
