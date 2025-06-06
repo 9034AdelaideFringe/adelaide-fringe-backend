@@ -8,7 +8,7 @@
 #include "service/UserService.h"
 #include "service/UploadService.h"
 #include "middlewares/AuthMiddleware.h"
-#include "service/TicketService. // 确保包含 TicketService
+#include "service/TicketService.h" // 确保包含 TicketService
 
 TicketController::TicketController() : bp_("ticket")
 {
