@@ -202,23 +202,67 @@ response TicketController::getTicketsByUserId(const request &req, const string &
     pqxx::connection conn{Config::get("database")};
     pqxx::work w{conn};
 
+    // 修改 SQL 查询以包含事件和票据类型的详细信息，并构建嵌套 JSON
     string query = R"(
-    SELECT COALESCE(json_agg(t), '[]'::json) 
-    FROM (
-        SELECT t.*, o.* 
-        FROM "tickets" t 
-        JOIN "orders" o ON t."order_id" = o."order_id" 
-        WHERE o."user_id" = $1
-    ) AS t;
-)";
+        SELECT COALESCE(json_agg(
+            json_build_object(
+                'ticket_id', t.ticket_id,
+                'qr_code', t.qr_code,
+                'status', t.status,
+                'issue_date', t.issue_date,
+                'expiry_date', t.expiry_date,
+                'last_refund_date', t.last_refund_date,
+                'scan_date', t.scan_date,
+                'order_details', json_build_object(
+                    'order_id', o.order_id,
+                    'user_id', o.user_id,
+                    'total_amount', o.total_amount,
+                    'order_date', o.order_date
+                    -- 添加其他订单字段如果需要
+                ),
+                'ticket_type_details', json_build_object(
+                    'ticket_type_id', tt.ticket_type_id,
+                    'name', tt.name,
+                    'description', tt.description,
+                    'price', tt.price,
+                    'available_quantity', tt.available_quantity,
+                    'created_at', tt.created_at,
+                    'updated_at', tt.updated_at
+                    -- 添加其他票据类型字段如果需要
+                ),
+                'event_details', json_build_object(
+                    'event_id', e.event_id,
+                    'title', e.title,
+                    'description', e.description,
+                    'short_description', e.short_description,
+                    'image', e.image,
+                    'venueseatinglayout', e.venueseatinglayout,
+                    'date', e.date,
+                    'time', e.time,
+                    'end_time', e.end_time,
+                    'venue', e.venue,
+                    'capacity', e.capacity,
+                    'category', e.category,
+                    'status', e.status,
+                    'created_by', e.created_by
+                    -- 添加其他事件字段如果需要
+                )
+            )
+        ), '[]'::json)
+        FROM "tickets" t
+        JOIN "orders" o ON t."order_id" = o."order_id"
+        JOIN "tickettypes" tt ON t."ticket_type_id" = tt."ticket_type_id" -- 加入 tickettypes 表
+        JOIN "events" e ON tt."event_id" = e."event_id" -- 加入 events 表
+        WHERE o."user_id" = $1;
+    )";
 
     auto r = w.exec_params(query, id);
     w.commit();
 
     auto data = json::wvalue();
 
+    // 从查询结果中加载 JSON 字符串
     auto dataStr = r[0][0].c_str();
-
     data = json::load(dataStr);
 
     CROW_LOG_INFO << data.dump();
