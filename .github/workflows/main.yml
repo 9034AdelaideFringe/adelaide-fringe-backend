@@ -33,13 +33,6 @@ jobs:
     needs: test
 
     steps:
-      - name: Free up disk space
-        run: |
-          sudo apt-get clean
-          sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-          docker system prune -af || true
-          df -h
-
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -66,6 +59,10 @@ jobs:
           elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
             rsync -avz --exclude='.git' ./ ec2-user@23.22.158.203:/home/ec2-user/app/prod/
           fi
+
+      - name: Clean up Docker on EC2
+        run: |
+          ssh ec2-user@23.22.158.203 "docker system prune -af --volumes"
 
       - name: Start Docker services on EC2
         run: |
