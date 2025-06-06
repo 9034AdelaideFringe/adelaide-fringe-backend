@@ -21,6 +21,8 @@ public:
     // scan
     response scanTicket(const request& req, const string& id);
 
+    response getTicketsByEventId(const request& req, const string& id);
+
 private:
     Blueprint bp_;
 };

@@ -8,6 +8,7 @@
 #include "service/UserService.h"
 #include "service/UploadService.h"
 #include "middlewares/AuthMiddleware.h"
+#include "service/TicketService. // 确保包含 TicketService
 
 TicketController::TicketController() : bp_("ticket")
 {
@@ -26,10 +27,14 @@ TicketController::TicketController() : bp_("ticket")
                                                     { return this->deleteTicket(req); });
     CROW_BP_ROUTE(bp_, "/userid/<string>").methods("GET"_method)([this](const request &req, const string &id)
                                                                  { return this->getTicketsByUserId(req, id); });
-                                                                 
+
     CROW_BP_ROUTE(bp_, "/scan/<string>").methods("GET"_method)([this](const request &req, const string &id)
                                                                  { return this->scanTicket(req, id); });
 
+    // --- 添加新路由 ---
+    CROW_BP_ROUTE(bp_, "/eventid/<string>").methods("GET"_method)([this](const request &req, const string &id)
+                                                                 { return this->getTicketsByEventId(req, id); });
+    // --- 添加结束 ---
 }
 
 response TicketController::getAllTickets(const request &req)
@@ -295,5 +300,39 @@ response TicketController::scanTicket(const request &req, const string &id)
     data = json::load(dataStr);
 
     CROW_LOG_INFO << data.dump();
+    return json::wvalue{{"message", "ok"}, {"data", data}};
+}
+
+response TicketController::getTicketsByEventId(const request &req, const string &id)
+{
+    CROW_LOG_INFO << "Getting tickets for event ID: " << id;
+    pqxx::connection conn{Config::get("database")};
+    pqxx::work w{conn};
+
+    // SQL 查询以获取指定 event_id 下所有票据的 seat 字段
+    // 我们连接 tickets 和 tickettypes 表，然后按 event_id 过滤
+    string query = R"(
+        SELECT COALESCE(json_agg(
+            json_build_object(
+                'ticket_id', t.ticket_id,
+                'seat', t.seat
+                -- 您可以在这里添加其他需要的票据字段
+            )
+        ), '[]'::json)
+        FROM "tickets" t
+        JOIN "tickettypes" tt ON t."ticket_type_id" = tt."ticket_type_id"
+        WHERE tt."event_id" = $1;
+    )";
+
+    auto r = w.exec_params(query, id);
+    w.commit();
+
+    auto data = json::wvalue();
+
+    // 从查询结果中加载 JSON 字符串
+    auto dataStr = r[0][0].c_str();
+    data = json::load(dataStr);
+
+    CROW_LOG_INFO << "Tickets by event ID response: " << data.dump();
     return json::wvalue{{"message", "ok"}, {"data", data}};
 }
