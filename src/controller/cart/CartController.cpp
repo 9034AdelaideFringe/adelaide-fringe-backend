@@ -55,6 +55,7 @@ response CartController::addToCart(const request &req)
     string user_id = body["user_id"].s();
     string ticket_type_id = body["ticket_type_id"].s();
     string quantity = body["quantity"].s();
+    string seat = body["seat"].s();
     if (user_id.empty() || ticket_type_id.empty() || quantity.empty())
     {
         return json::wvalue{{"error", "missing field"}};
@@ -66,12 +67,12 @@ response CartController::addToCart(const request &req)
     pqxx::work w{conn};
 
     std::string query = R"(
-        INSERT INTO "cart" ("cart_item_id", "user_id", "ticket_type_id", "quantity", "added_at")
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO "cart" ("cart_item_id", "user_id", "ticket_type_id", "quantity", "added_at", "seat")
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *
     )";
 
-    auto r = w.exec_params(query, cart_item_id, user_id, ticket_type_id, quantity, "NOW()");
+    auto r = w.exec_params(query, cart_item_id, user_id, ticket_type_id, quantity, "NOW()", seat);
 
     w.commit();
 
