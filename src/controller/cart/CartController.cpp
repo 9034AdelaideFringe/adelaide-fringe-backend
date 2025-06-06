@@ -194,7 +194,7 @@ response CartController::checkOut(const request &req, const string &id)
 
     // 5. 插入所有票（关键点：用 generate_series）
     r = w.exec_params(R"(
-        INSERT INTO tickets (ticket_id, order_id, ticket_type_id, event_id, issue_date, expiry_date, last_refund_date)
+        INSERT INTO tickets (ticket_id, order_id, ticket_type_id, event_id, issue_date, expiry_date, last_refund_date， seat)
         SELECT
             gen_random_uuid(),
             $1,
@@ -202,7 +202,8 @@ response CartController::checkOut(const request &req, const string &id)
             tt.event_id,
             NOW(),
             NOW() + INTERVAL '7 days',
-            NOW() + INTERVAL '7 days'
+            NOW() + INTERVAL '7 days',
+            c.seat
         FROM cart c
         JOIN tickettypes tt ON c.ticket_type_id = tt.ticket_type_id,
             generate_series(1, c.quantity)
