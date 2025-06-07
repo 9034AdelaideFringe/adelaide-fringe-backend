@@ -32,20 +32,57 @@ CartController::CartController() : bp_("cart")
 
 response CartController::getCartByUserId(const request &req, const string &id)
 {
+    CROW_LOG_INFO << "Getting cart for user ID: " << id;
     pqxx::connection conn{Config::get("database")};
     pqxx::work w{conn};
 
+    // 修改 SQL 查询以连接 cart, tickettypes, 和 events 表，并构建嵌套 JSON
     std::string query = R"(
-        select * from "cart"
-        where "user_id" = $1
+        SELECT COALESCE(json_agg(
+            json_build_object(
+                'user_id', c.user_id,
+                'seat', c.seat, 
+                'ticket_type_details', json_build_object(
+                    'ticket_type_id', tt.ticket_type_id,
+                    'name', tt.name, -- 包含 tickettypes 的 name
+                    'price', tt.price
+                ),
+                'event_details', json_build_object(
+                    'event_id', e.event_id,
+                    'title', e.title, -- 包含 events 的 title
+                    'image', e.image, -- 包含 events 的 image
+                    'date', e.date,   -- 包含 events 的 date
+                    'time', e.time,   -- 包含 events 的 time
+                    'venue', e.venue, -- 包含 events 的 venue
+                    'end_time', e.end_time,
+                    'status', e.status
+                )
+            )
+        ), '[]'::json)
+        FROM "cart" c
+        JOIN "tickettypes" tt ON c."ticket_type_id" = tt."ticket_type_id" -- 加入 tickettypes 表
+        JOIN "events" e ON tt."event_id" = e."event_id" -- 加入 events 表
+        WHERE c."user_id" = $1;
     )";
 
     auto r = w.exec_params(query, id);
 
     w.commit();
 
-    auto data = resultsToJSON(r);
+    auto data = json::wvalue();
 
+    // 从查询结果中加载 JSON 字符串
+    // json_agg 返回一个包含单个 JSON 字符串的行和列
+    if (!r.empty() && !r[0].empty() && !r[0][0].is_null()) {
+        auto dataStr = r[0][0].c_str();
+        data = json::load(dataStr);
+    } else {
+        // 如果查询结果为空或包含 NULL，返回一个空的 JSON 数组
+        data = json::wvalue::list();
+    }
+
+
+    CROW_LOG_INFO << "Cart by user ID response: " << data.dump();
     return json::wvalue{{"message", "ok"}, {"data", data}};
 }
 
