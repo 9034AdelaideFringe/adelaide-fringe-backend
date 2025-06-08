@@ -232,16 +232,16 @@ response CartController::checkOut(const request &req, const string &id)
 
     // 5. 插入所有票（关键点：用 generate_series）
     r = w.exec_params(R"(
-        INSERT INTO tickets (ticket_id, order_id, ticket_type_id, event_id, issue_date, expiry_date, last_refund_date， seat)
+        INSERT INTO tickets (ticket_id, order_id, ticket_type_id, event_id, issue_date, expiry_date, last_refund_date, seat) -- 将全角逗号改为半角逗号
         SELECT
             gen_random_uuid(),
-            $1,
+            $1, -- order_id
             c.ticket_type_id,
             tt.event_id,
             NOW(),
             NOW() + INTERVAL '7 days',
             NOW() + INTERVAL '7 days',
-            c.seat
+            c.seat -- 从购物车中选择 seat 字段
         FROM cart c
         JOIN tickettypes tt ON c.ticket_type_id = tt.ticket_type_id,
             generate_series(1, c.quantity)
