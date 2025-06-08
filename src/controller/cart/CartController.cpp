@@ -40,6 +40,7 @@ response CartController::getCartByUserId(const request &req, const string &id)
     std::string query = R"(
         SELECT COALESCE(json_agg(
             json_build_object(
+            'cart_item_id', c.cart_item_id,
                 'user_id', c.user_id,
                 'seat', c.seat, 
                 'ticket_type_details', json_build_object(
