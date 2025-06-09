@@ -1,6 +1,6 @@
 #pragma once
 
-#include "postgresql/libpq-fe.h"
+#include "libpq-fe.h"
 #include <string>
 #include <stdexcept>
 #include <vector>
@@ -30,6 +30,7 @@ public:
 
     void close();
     bool isConnected() const;
+    bool isTestConnection() const;
 
 private:
     struct PGConnDeleter

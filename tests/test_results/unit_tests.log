@@ -1,0 +1,21 @@
+Warning: Could not load test config: Failed to open file: test_config.json
+[==========] Running 42 tests from 4 test suites.
+[----------] Global test environment set-up.
+[----------] 16 tests from EventControllerTest
+[ RUN      ] EventControllerTest.GetAllEvents
+unknown file: Failure
+C++ exception with description "missing "=" after "mock://localhost/test_db" in connection info string
+" thrown in the test body.
+[  FAILED  ] EventControllerTest.GetAllEvents (1 ms)
+[ RUN      ] EventControllerTest.GetEventByValidId
+unknown file: Failure
+C++ exception with description "missing "=" after "mock://localhost/test_db" in connection info string
+" thrown in the test body.
+[  FAILED  ] EventControllerTest.GetEventByValidId (0 ms)
+[ RUN      ] EventControllerTest.GetEventByEmptyId
+/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/unit/controller/EventControllerTest.cpp:126: Failure
+Value of: res
+Expected: status code is (code: 400)
+  Actual: 320-byte object <C8-00 00-00 00-00 00-00 A0-F6 E0-50 01-00 00-00 17-00 00-00 00-00 00-00 20-00 00-00 00-00 00-80 20-F8 E0-50 01-00 00-00 02-00 00-00 00-00 00-00 60-FD E0-50 01-00 00-00 01-00 00-00 00-00 00-00 ... 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 00-00 20-00 00-00 01-00 00-00> (of type crow::response)
+[  FAILED  ] EventControllerTest.GetEventByEmptyId (0 ms)
+[ RUN      ] EventControllerTest.CreateEventWithValidData

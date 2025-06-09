@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="8" failures="0" disabled="0" errors="0" time="0" timestamp="2025-06-08T20:41:45.744" name="AllTests">
+  <testsuite name="StandaloneHashTest" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0" timestamp="2025-06-08T20:41:45.745">
+    <testcase name="GeneratesSHA256Hash" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/standalone_utils_test.cpp" line="7" status="run" result="completed" time="0" timestamp="2025-06-08T20:41:45.745" classname="StandaloneHashTest" />
+    <testcase name="EmptyStringHash" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/standalone_utils_test.cpp" line="15" status="run" result="completed" time="0" timestamp="2025-06-08T20:41:45.745" classname="StandaloneHashTest" />
+    <testcase name="ConsistentHashing" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/standalone_utils_test.cpp" line="23" status="run" result="completed" time="0" timestamp="2025-06-08T20:41:45.745" classname="StandaloneHashTest" />
+  </testsuite>
+  <testsuite name="StandaloneConfigTest" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0" timestamp="2025-06-08T20:41:45.745">
+    <testcase name="LoadConfig" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/standalone_utils_test.cpp" line="53" status="run" result="completed" time="0" timestamp="2025-06-08T20:41:45.745" classname="StandaloneConfigTest" />
+    <testcase name="GetValue" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/standalone_utils_test.cpp" line="60" status="run" result="completed" time="0" timestamp="2025-06-08T20:41:45.745" classname="StandaloneConfigTest" />
+    <testcase name="NonExistentKey" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/standalone_utils_test.cpp" line="67" status="run" result="completed" time="0" timestamp="2025-06-08T20:41:45.745" classname="StandaloneConfigTest" />
+  </testsuite>
+  <testsuite name="StandaloneUtilsTest" tests="2" failures="0" disabled="0" skipped="0" errors="0" time="0" timestamp="2025-06-08T20:41:45.745">
+    <testcase name="BasicStringOperations" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/standalone_utils_test.cpp" line="74" status="run" result="completed" time="0" timestamp="2025-06-08T20:41:45.745" classname="StandaloneUtilsTest" />
+    <testcase name="NumberValidation" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/standalone_utils_test.cpp" line="80" status="run" result="completed" time="0" timestamp="2025-06-08T20:41:45.745" classname="StandaloneUtilsTest" />
+  </testsuite>
+</testsuites>

@@ -7,6 +7,7 @@
 #include "utils/Singleton.h"
 #include "service/UploadService.h"
 #include "service/EventService.h"
+#include "utils/PostgresConnection.h"
 
 EventController::EventController()
 {
@@ -64,7 +65,7 @@ response EventController::searchEvent(const request &req)
 
     CROW_LOG_INFO << query;
 
-    auto r = w.exec_params(query, "%" + title + "%");
+    auto r = w.exec(query, pqxx::params{"%" + title + "%"});
 
     w.commit();
 
@@ -132,7 +133,7 @@ response EventController::getEventById(const std::string &id)
         where "event_id" = $1
     )";
 
-    auto r = w.exec(query, id);
+    auto r = w.exec(query, pqxx::params{id});
     w.commit();
 
     auto data = resultsToJSON(r);
@@ -158,7 +159,7 @@ response EventController::getTicketTypes(const request &req, const string &id)
         where "event_id" = $1
     )";
 
-    auto r = w.exec(query, id);
+    auto r = w.exec(query, pqxx::params{id});
 
     w.commit();
 

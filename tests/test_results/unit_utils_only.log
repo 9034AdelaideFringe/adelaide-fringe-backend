@@ -1,0 +1,26 @@
+Test config loaded successfully
+Database config: mock://localhost/test_db
+Note: Google Test filter = ConfigTest.*:HashTest.*
+[==========] Running 6 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 3 tests from ConfigTest
+[ RUN      ] ConfigTest.LoadConfig
+[       OK ] ConfigTest.LoadConfig (0 ms)
+[ RUN      ] ConfigTest.GetValue
+[       OK ] ConfigTest.GetValue (0 ms)
+[ RUN      ] ConfigTest.NonExistentKey
+[       OK ] ConfigTest.NonExistentKey (0 ms)
+[----------] 3 tests from ConfigTest (0 ms total)
+
+[----------] 3 tests from HashTest
+[ RUN      ] HashTest.GeneratesSHA256Hash
+[       OK ] HashTest.GeneratesSHA256Hash (0 ms)
+[ RUN      ] HashTest.EmptyStringHash
+[       OK ] HashTest.EmptyStringHash (0 ms)
+[ RUN      ] HashTest.ConsistentHashing
+[       OK ] HashTest.ConsistentHashing (0 ms)
+[----------] 3 tests from HashTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 6 tests from 2 test suites ran. (1 ms total)
+[  PASSED  ] 6 tests.

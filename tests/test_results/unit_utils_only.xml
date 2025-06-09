@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="6" failures="0" disabled="0" errors="0" time="0.001" timestamp="2025-06-08T20:42:23.426" name="AllTests">
+  <testsuite name="ConfigTest" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0" timestamp="2025-06-08T20:42:23.427">
+    <testcase name="LoadConfig" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/unit/utils/ConfigTest.cpp" line="24" status="run" result="completed" time="0" timestamp="2025-06-08T20:42:23.427" classname="ConfigTest" />
+    <testcase name="GetValue" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/unit/utils/ConfigTest.cpp" line="31" status="run" result="completed" time="0" timestamp="2025-06-08T20:42:23.427" classname="ConfigTest" />
+    <testcase name="NonExistentKey" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/unit/utils/ConfigTest.cpp" line="38" status="run" result="completed" time="0" timestamp="2025-06-08T20:42:23.427" classname="ConfigTest" />
+  </testsuite>
+  <testsuite name="HashTest" tests="3" failures="0" disabled="0" skipped="0" errors="0" time="0" timestamp="2025-06-08T20:42:23.427">
+    <testcase name="GeneratesSHA256Hash" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/unit/utils/HashTest.cpp" line="4" status="run" result="completed" time="0" timestamp="2025-06-08T20:42:23.427" classname="HashTest" />
+    <testcase name="EmptyStringHash" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/unit/utils/HashTest.cpp" line="12" status="run" result="completed" time="0" timestamp="2025-06-08T20:42:23.428" classname="HashTest" />
+    <testcase name="ConsistentHashing" file="/Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/unit/utils/HashTest.cpp" line="20" status="run" result="completed" time="0" timestamp="2025-06-08T20:42:23.428" classname="HashTest" />
+  </testsuite>
+</testsuites>

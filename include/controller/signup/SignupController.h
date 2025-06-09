@@ -16,9 +16,6 @@ public:
     REST_CONTROLLER("/api/signup")
 
     SignupController();
-    
-
-private:
     response signup(const request& req);
 
 

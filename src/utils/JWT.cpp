@@ -20,7 +20,7 @@ jwt::decoded_jwt<jwt::traits::kazuho_picojson> decodeJWT(const std::string &toke
     return decoded;
 }
 
-auto verifyJWT(const auto &decoded, const std::string& role)
+bool verifyJWT(const jwt::decoded_jwt<jwt::traits::kazuho_picojson> &decoded, const std::string& role)
 {
     auto verifier = jwt::verify()
                         .with_issuer("clx")

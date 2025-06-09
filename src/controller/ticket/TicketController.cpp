@@ -58,7 +58,7 @@ response TicketController::createTicketType(const request &req)
     RETURNING *;
     )";
 
-    auto r = w.exec_params(query, ticket_type_id, event_id, name, description, price, available_quantity);
+    auto r = w.exec(query, pqxx::params{ticket_type_id, event_id, name, description, price, available_quantity});
 
     auto data = resultsToJSON(r);
 
@@ -98,7 +98,7 @@ response TicketController::updateTicketType(const request &req, const string &id
         RETURNING *;
     )";
 
-    auto r = w.exec_params(query, ticket_type_id, event_id, name, description, price, available_quantity);
+    auto r = w.exec(query, pqxx::params{ticket_type_id, event_id, name, description, price, available_quantity});
 
     auto data = resultsToJSON(r);
 
@@ -132,7 +132,7 @@ response TicketController::deleteTicketType(const request &req, const string &id
             RETURNING *;
     )";
 
-    auto r = w.exec_params(query, ticket_type_id);
+    auto r = w.exec(query, pqxx::params{ticket_type_id});
 
     auto data = resultsToJSON(r);
 
@@ -168,7 +168,7 @@ response TicketController::createTicket(const request &req)
         returning *;
     )";
 
-    auto r = w.exec_params(query, id, userId, eventId, price);
+    auto r = w.exec(query, pqxx::params{id, userId, eventId, price});
 
     w.commit();
 
@@ -199,7 +199,7 @@ response TicketController::refund(const request &req, const string &id)
                 RETURNING *;
     )";
 
-    auto r = w.exec_params(query, id);
+    auto r = w.exec(query, pqxx::params{id});
 
     if (r.empty())
     {
@@ -245,7 +245,7 @@ response TicketController::getMyTicket(const request &req)
         WHERE o."user_id" = $1;
     )";
 
-    auto r = w.exec_params(query, id);
+    auto r = w.exec(query, pqxx::params{id});
 
     w.commit();
 
@@ -270,7 +270,7 @@ response TicketController::getTicketById(const request &req, const string &id)
         returning *;
     )";
 
-    auto r = w.exec_params(query, id);
+    auto r = w.exec(query, pqxx::params{id});
 
     w.commit();
 
@@ -316,7 +316,7 @@ response TicketController::updateTicket(const request &req)
         returning *;
     )";
 
-    auto r = w.exec_params(query, userId, eventId, price, id);
+    auto r = w.exec(query, pqxx::params{userId, eventId, price, id});
 
     w.commit();
 
@@ -340,7 +340,7 @@ response TicketController::searchTicket(const request &req)
         where title like $1
     )";
 
-    auto r = w.exec_params(query, "%" + title + "%");
+    auto r = w.exec(query, pqxx::params{"%" + title + "%"});
     auto data = resultsToJSON(r);
 
     w.commit();
@@ -371,7 +371,7 @@ response TicketController::deleteTicket(const request &req)
         returning *;
     )";
 
-    auto r = w.exec_params(query, id);
+    auto r = w.exec(query, pqxx::params{id});
 
     if (r.empty())
     {

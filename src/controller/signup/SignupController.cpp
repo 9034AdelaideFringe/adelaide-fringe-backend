@@ -36,7 +36,7 @@ response SignupController::signup(const request &req)
     values ($1, $2, $3, $4)
     returning *;
     )";
-    pqxx::result r = w.exec_params(query, id, email, hashedPassword, name);
+    pqxx::result r = w.exec(query, pqxx::params{id, email, hashedPassword, name});
 
     w.commit();
 

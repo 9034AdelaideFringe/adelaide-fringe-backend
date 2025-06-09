@@ -111,7 +111,7 @@ json::wvalue EventService::createEventImpl(const request &req, const string &id)
     returning *;
     )";
 
-    pqxx::result r = w.exec_params(query,
+    pqxx::result r = w.exec(query, pqxx::params{
                                    event_id,
                                    title,
                                    description,
@@ -125,7 +125,7 @@ json::wvalue EventService::createEventImpl(const request &req, const string &id)
                                    capacity,
                                    category,
                                    status,
-                                   created_by);
+                                   created_by});
 
     data = resultsToJSON(r);
 
@@ -203,7 +203,7 @@ json::wvalue EventService::updateEventImpl(const request &req, const string &id)
     returning *;
     )";
 
-    pqxx::result r = w.exec_params(query,
+    pqxx::result r = w.exec(query, pqxx::params{
                                    event_id,
                                    title,
                                    description,
@@ -217,7 +217,7 @@ json::wvalue EventService::updateEventImpl(const request &req, const string &id)
                                    capacity,
                                    category,
                                    status,
-                                   created_by);
+                                   created_by});
 
     data = resultsToJSON(r);
 
@@ -242,9 +242,9 @@ json::wvalue EventService::deleteEventImpl(const request &req, const string &id)
         returning *;
     )";
 
-    pqxx::result r = w.exec_params(query,
+    pqxx::result r = w.exec(query, pqxx::params{
                                    event_id
-                                   );
+                                   });
 
     auto data = resultsToJSON(r);
 

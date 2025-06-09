@@ -7,6 +7,8 @@ set(CMAKE_PREFIX_PATH
     "/opt/homebrew/opt/libpq"
     "/opt/homebrew/opt/ossp-uuid"
     "/opt/homebrew/opt/libpqxx"
+    "/opt/homebrew/opt/crow"
+    "/opt/homebrew/opt/asio"
     ${CMAKE_PREFIX_PATH}
 )
 
@@ -21,6 +23,9 @@ target_include_directories(server PRIVATE
     "/opt/homebrew/opt/libpq/include"
     "/opt/homebrew/opt/ossp-uuid/include"
     "/opt/homebrew/opt/libpqxx/include"
+    "/opt/homebrew/opt/crow/include"
+    "/opt/homebrew/opt/asio/include"
+    "/opt/homebrew/opt/libjwt/include"
 )
 
 file(GLOB_RECURSE SRC ${CMAKE_SOURCE_DIR}/src/*.cpp)

@@ -32,8 +32,8 @@ response LoginController::login(const request &req)
         where "email" = $1 AND "password" = $2
     )";
 
-    pqxx::result r = w.exec_params(query,
-                                   email, hashedPassword);
+    pqxx::result r = w.exec(query, pqxx::params{
+                                   email, hashedPassword});
 
 
     w.commit();

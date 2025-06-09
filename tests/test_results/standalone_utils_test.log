@@ -1,0 +1,31 @@
+Running main() from /Users/zengjingyuan/Projects/Adelaide-Fringe/adelaide-fringe-backend/tests/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 8 tests from 3 test suites.
+[----------] Global test environment set-up.
+[----------] 3 tests from StandaloneHashTest
+[ RUN      ] StandaloneHashTest.GeneratesSHA256Hash
+[       OK ] StandaloneHashTest.GeneratesSHA256Hash (0 ms)
+[ RUN      ] StandaloneHashTest.EmptyStringHash
+[       OK ] StandaloneHashTest.EmptyStringHash (0 ms)
+[ RUN      ] StandaloneHashTest.ConsistentHashing
+[       OK ] StandaloneHashTest.ConsistentHashing (0 ms)
+[----------] 3 tests from StandaloneHashTest (0 ms total)
+
+[----------] 3 tests from StandaloneConfigTest
+[ RUN      ] StandaloneConfigTest.LoadConfig
+[       OK ] StandaloneConfigTest.LoadConfig (0 ms)
+[ RUN      ] StandaloneConfigTest.GetValue
+[       OK ] StandaloneConfigTest.GetValue (0 ms)
+[ RUN      ] StandaloneConfigTest.NonExistentKey
+[       OK ] StandaloneConfigTest.NonExistentKey (0 ms)
+[----------] 3 tests from StandaloneConfigTest (0 ms total)
+
+[----------] 2 tests from StandaloneUtilsTest
+[ RUN      ] StandaloneUtilsTest.BasicStringOperations
+[       OK ] StandaloneUtilsTest.BasicStringOperations (0 ms)
+[ RUN      ] StandaloneUtilsTest.NumberValidation
+[       OK ] StandaloneUtilsTest.NumberValidation (0 ms)
+[----------] 2 tests from StandaloneUtilsTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 8 tests from 3 test suites ran. (0 ms total)
+[  PASSED  ] 8 tests.
